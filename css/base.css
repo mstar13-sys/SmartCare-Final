@@ -1,0 +1,23 @@
+/* =======================================================
+   Base — resets and global element defaults
+   ======================================================= */
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{margin:0;}
+p{margin:0;}
+button{font-family:inherit;}
+input{font-family:inherit;}
+a{color:inherit;}
+::selection{background:var(--teal-light);color:var(--teal);}
+
+/* Keyboard focus visibility (accessibility floor) */
+a:focus-visible, button:focus-visible, input:focus-visible{
+  outline:2.5px solid var(--primary); outline-offset:2px;
+}

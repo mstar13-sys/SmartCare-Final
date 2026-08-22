@@ -1,0 +1,21 @@
+/* =======================================================
+   Responsive breakpoints
+   ======================================================= */
+@media (max-width:980px){
+  .shell{ grid-template-columns:1fr; }
+  .brand-panel{ display:none; }
+  .mobile-mark{ display:flex; }
+  .form-panel{ padding:40px 20px 56px; }
+}
+@media (max-width:420px){
+  .role-group{ grid-template-columns:1fr; }
+  .toast-stack{ left:16px; right:16px; top:16px; }
+  .toast{ width:auto; }
+}
+@media (max-width:760px){
+  .dashboard-header{ flex-direction:column; margin-bottom:30px; }
+  .dashboard-grid{ grid-template-columns:1fr; }
+  .dashboard-card{ min-height:0; }
+  .dashboard-section{ flex-direction:column; margin-top:34px; }
+  .quick-actions{ width:100%; }
+}
