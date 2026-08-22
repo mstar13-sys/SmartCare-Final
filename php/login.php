@@ -7,6 +7,7 @@
    in the database, verifies the password, and starts a session.
    ========================================================================= */
 require __DIR__ . '/config.php';
+require __DIR__ . '/validators.php';
 require __DIR__ . '/db.php'; // gives us $pdo
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -19,7 +20,11 @@ $email    = trim($_POST['loginEmail'] ?? '');
 $password = $_POST['loginPassword'] ?? '';
 
 $errors = [];
-if ($email === '')    $errors['loginEmail'] = 'Enter your email or username.';
+if ($email === '') {
+    $errors['loginEmail'] = 'Enter your email address.';
+} elseif (!is_valid_email($email)) {
+    $errors['loginEmail'] = 'Enter a valid email address.';
+}
 if ($password === '') $errors['loginPassword'] = 'Enter your password.';
 
 if ($errors) {

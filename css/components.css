@@ -74,10 +74,26 @@
 .switcher a{ position:relative; z-index:1; display:block; padding:10px 0; color:var(--ink-variant); font-size:14px; font-weight:600; text-align:center; text-decoration:none; border-radius:999px; }
 .switcher[data-active="login"] a:first-of-type,.switcher[data-active="signup"] a:last-of-type{ color:var(--primary); }
 
-/* --- Form panes (login vs signup) --- */
-.panes{ position:relative; }
+/* --- Form panes (login vs signup), merged into a single page ---
+   Idle state: only the .active pane is rendered, in normal flow.
+   While js/auth-switch.js is mid-switch it adds `is-animating` to
+   `.panes`, which lifts BOTH panes into absolute position so they can
+   slide past each other, and animates `.panes`' own height to match
+   the incoming pane (they're different heights) at the same time. */
+.panes{ position:relative; overflow:hidden; }
+.panes.is-animating{ transition:height .38s var(--ease); }
 .pane{ display:none; }
-.pane.active{ display:block; animation:fade-in .38s var(--ease); }
+.pane.active{ display:block; }
+
+.panes.is-animating .pane{
+  display:block;
+  position:absolute; top:0; left:0;
+  width:100%;
+  transition:transform .38s var(--ease), opacity .3s var(--ease);
+}
+.panes.is-animating .pane.pane-pos-center{ transform:translateX(0); opacity:1; }
+.panes.is-animating .pane.pane-pos-right{ transform:translateX(100%); opacity:0; }
+.panes.is-animating .pane.pane-pos-left{ transform:translateX(-100%); opacity:0; }
 
 .head-block{ margin-bottom:26px; }
 .head-block h2{ font-size:26px; font-weight:700; letter-spacing:-.01em; }
@@ -212,11 +228,11 @@ form{ display:flex; flex-direction:column; gap:18px; }
 .submit-btn.loading .btn-label{ display:none; }
 
 .switch-foot{ text-align:center; margin-top:22px; font-size:13.5px; color:var(--ink-variant); }
-.switch-foot button{
+.switch-foot a, .switch-foot button{
   background:none; border:none; cursor:pointer; color:var(--primary); font-weight:700; font-size:13.5px;
-  padding:0; margin-left:2px;
+  padding:0; margin-left:2px; text-decoration:none;
 }
-.switch-foot button:hover{ text-decoration:underline; }
+.switch-foot a:hover, .switch-foot button:hover{ text-decoration:underline; }
 
 .secure-note{
   display:flex; align-items:center; gap:8px; justify-content:center;
@@ -277,12 +293,6 @@ form{ display:flex; flex-direction:column; gap:18px; }
 .auth-foot{ margin-top:22px; text-align:center; color:var(--ink-variant); font-size:13px; }
 
 /* --- Sync / async validation mode toggle (login form) --- */
-.mode-toggle{ display:flex; gap:16px; margin:2px 0 2px; }
-.mode-toggle label{
-  display:flex; align-items:center; gap:6px; font-size:12.5px;
-  color:var(--ink-variant); cursor:pointer;
-}
-
 /* --- Toast notifications --- */
 .toast-stack{
   position:fixed; top:22px; right:22px; z-index:50;

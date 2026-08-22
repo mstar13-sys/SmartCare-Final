@@ -10,7 +10,14 @@
    ========================================================================= */
 
 function is_valid_email(string $value): bool {
-    return (bool) filter_var($value, FILTER_VALIDATE_EMAIL);
+    // filter_var(FILTER_VALIDATE_EMAIL) alone is too permissive here — it
+    // happily accepts junk domains like "user@abc.c" (1-character TLD) or
+    // "user@abc" without a real TLD at all. This regex is the same one
+    // used client-side in js/validators.js: it requires a proper domain
+    // ending in a letters-only TLD of at least 2 characters, without
+    // limiting which domain it has to be (gmail.com, smartcare.com,
+    // yahoo.co.uk, and so on all still pass).
+    return (bool) preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/', $value);
 }
 
 function is_valid_phone(string $value): bool {

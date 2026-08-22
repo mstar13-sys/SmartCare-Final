@@ -1,10 +1,15 @@
 /* =========================================================================
-   Page Transition
+   Page Transition (DEPRECATED — no longer loaded)
    -------------------------------------------------------------------------
-   login.php and signup.php are two separate PHP pages (not a single-page
-   app), so switching between them is a real browser navigation. This file
-   makes that navigation feel like a smooth in-place transition instead of
-   an abrupt reload:
+   login.php and signup.php used to be two separate PHP pages, so switching
+   between them was a real browser navigation, and this file made that
+   navigation feel like a smooth in-place transition instead of an abrupt
+   reload. They've since been merged into one page (auth/login.php, with
+   both panes switched client-side by js/auth-switch.js), so there's no
+   navigation left for this file to smooth over. Kept only for reference /
+   in case anything else in the project still expects it to exist.
+
+   Original behavior, for context:
 
      - On load, the page fades/slides in (see the .page-enter keyframes
        in css/animations.css).

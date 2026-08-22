@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../../includes/bootstrap.php';
+require __DIR__ . '/../../includes/start.php';
 if (!$currentUser) { header('Location: ../../auth/login.php'); exit; }
 if ($currentUser['role'] === 'staff') { header('Location: ../admin/dashboard.php'); exit; }
 $pageTitle = 'SmartCare - Patient Dashboard';

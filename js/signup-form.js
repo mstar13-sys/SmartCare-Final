@@ -4,12 +4,15 @@
    Mirrors login-form.js: owns all DOM events for the signup form. Reuses
    SmartCarePasswordStrength (from password-strength.js) so the pass/fail
    rules used at submit time are guaranteed to match what the user sees
-   live in the meter. After a successful signup it calls switchTab('login')
-   directly — no indirection, just a normal function call.
+   live in the meter. After a successful signup it redirects to
+   login.php.
 
-   Submission now posts to php/signup.php instead of the old setTimeout
-   demo. The checks below still run first for instant feedback —
-   php/signup.php re-checks every one of them server-side regardless.
+   Processing mode: ASYNCHRONOUS. Submission uses fetch(), so the browser
+   keeps painting and responding to input the whole time php/signup.php
+   is working — the spinner keeps spinning, and the page never locks up.
+   This is the intentional contrast with the login form, which uses a
+   blocking synchronous XMLHttpRequest and freezes while it waits —
+   compare js/login-form.js.
    ========================================================================= */
 (function () {
   const form            = document.getElementById('signupForm');
@@ -79,9 +82,6 @@
 
     btn.classList.add('loading');
     btn.disabled = true;
-    const messageArea = document.getElementById('signupMessage');
-    messageArea.textContent = 'Creating your account...';
-    messageArea.className = 'message-area info';
 
     const body = new FormData(form); // includes the hidden csrf_token field automatically
 
@@ -92,9 +92,6 @@
         btn.disabled = false;
 
         if (data.success) {
-          messageArea.textContent = data.message;
-          messageArea.className = 'message-area success';
-
           form.reset();
           SmartCareFormHelpers.clearFieldStates(form.querySelectorAll('input'));
           SmartCarePasswordStrength.reset();
@@ -106,8 +103,6 @@
             onConfirm: () => { window.location.href = 'login.php'; },
           });
         } else {
-          messageArea.textContent = data.message;
-          messageArea.className = 'message-area error';
           if (data.errors) {
             Object.keys(data.errors).forEach((id) => {
               const el = document.getElementById(id);
@@ -118,8 +113,6 @@
         }
       })
       .catch(() => {
-        messageArea.textContent = "Couldn't reach the server. Please try again.";
-        messageArea.className = 'message-area error';
         btn.classList.remove('loading');
         btn.disabled = false;
         showToast({ type: 'error', title: 'Connection problem', body: "Couldn't reach the server. Please try again." });

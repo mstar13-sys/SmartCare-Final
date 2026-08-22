@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/includes/bootstrap.php';
+require __DIR__ . '/includes/start.php';
 
 if ($currentUser) {
     $dashboard = $currentUser['role'] === 'staff'

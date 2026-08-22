@@ -6,8 +6,14 @@
    reuse from any form module.
    ========================================================================= */
 const SmartCareValidators = (() => {
+  // Requires a real-looking domain: at least one label, then a final
+  // TLD made of letters only, at least 2 characters (e.g. .com, .co,
+  // .ph). This is what rejects domains like "abc" (no dot at all) or
+  // "abc.c" (1-character TLD), while still accepting any properly
+  // formed domain — @gmail.com, @smartcare.com, @yahoo.co.uk, etc. —
+  // without needing a hardcoded list of allowed domains.
   function isValidEmail(value) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/.test(value);
   }
 
   function isValidPhone(value) {
