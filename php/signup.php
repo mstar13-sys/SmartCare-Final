@@ -51,10 +51,6 @@ if ($errors) {
     json_response(false, 'Please fix the highlighted fields.', ['errors' => $errors]);
 }
 
-// ---- Reject duplicate emails AND duplicate phone numbers before touching
-//      the database further. Phone numbers are compared with formatting
-//      stripped out, so "0917 123 4567" and "0917-123-4567" are correctly
-//      caught as the same number even though they're different strings. ----
 $normalizedPhone    = normalize_phone($phone);
 $normalizedPhoneSql = normalize_phone_sql('phone');
 

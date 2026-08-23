@@ -30,33 +30,35 @@ const NotificationCenter = (() => {
   return { subscribe, publish };
 })();
 
-function writeLoginMessage(text, type = 'info') {
-  const area = document.getElementById('loginMessage');
+function writeLoginMessage(text, type = "info") {
+  const area = document.getElementById("loginMessage");
   if (!area) return;
   area.textContent = text;
   area.className = `message-area ${type}`;
 }
 
 // ---- Built-in subscribers: turn login events into console logs / toasts ----
-NotificationCenter.subscribe('login:attempt', (data) => {
+NotificationCenter.subscribe("login:attempt", (data) => {
   console.log(`[NotificationCenter] login:attempt — ${data.email}`);
-  writeLoginMessage('Validating credentials...', 'info');
+  writeLoginMessage("Validating credentials...", "info");
 });
 
-NotificationCenter.subscribe('login:success', (data) => {
-  writeLoginMessage(data.message, 'success');
+NotificationCenter.subscribe("login:success", (data) => {
+  writeLoginMessage(data.message, "success");
   showSuccessDialog({
-    title: 'Logged in!',
+    title: "Logged in!",
     text: data.message,
-    confirmButtonText: 'Okay',
+    confirmButtonText: "Okay",
     // A plain reload is enough to get to the right dashboard: includes/start.php
     // on every auth page checks the session on load and redirects signed-in
     // users to their role's dashboard automatically.
-    onConfirm: () => { window.location.reload(); },
+    onConfirm: () => {
+      window.location.reload();
+    },
   });
 });
 
-NotificationCenter.subscribe('login:failed', (data) => {
-  writeLoginMessage(data.message, 'error');
-  showToast({ type: 'error', title: 'Login failed', body: data.message });
+NotificationCenter.subscribe("login:failed", (data) => {
+  writeLoginMessage(data.message, "error");
+  showToast({ type: "error", title: "Login failed", body: data.message });
 });

@@ -1,11 +1,4 @@
 <?php
-/* =========================================================================
-   Login Endpoint
-   -------------------------------------------------------------------------
-   POST /php/login.php — called by js/login-form.js. Re-checks what the
-   client already checked (never trust the browser), looks the account up
-   in the database, verifies the password, and starts a session.
-   ========================================================================= */
 require __DIR__ . '/config.php';
 require __DIR__ . '/validators.php';
 require __DIR__ . '/db.php'; // gives us $pdo
@@ -31,10 +24,6 @@ if ($errors) {
     json_response(false, 'Please fix the highlighted fields.', ['errors' => $errors]);
 }
 
-// A short, deliberate delay so the sync-vs-async toggle on the login form
-// is actually visible — without it, both modes would finish too fast to
-// tell apart. Safe to remove once the database lookup below gives the
-// request enough natural latency of its own.
 sleep(2);
 
 // ---- Look the account up and verify the password ----

@@ -1,22 +1,12 @@
-/* =========================================================================
-   Password Strength Meter
-   -------------------------------------------------------------------------
-   Listens to the native 'input' event on #signupPassword, recomputes the
-   four password rules on every keystroke, and updates the meter/checklist
-   you see on screen.
 
-   evaluate()/reset() are also exposed on window.SmartCarePasswordStrength
-   so signup-form.js can reuse the exact same scoring logic at submit time
-   instead of duplicating it.
-   ========================================================================= */
 (function () {
-  const signupPassword  = document.getElementById('signupPassword');
-  const confirmPassword = document.getElementById('confirmPassword');
-  const strengthBars    = document.querySelectorAll('#strengthBlock .bars i');
-  const strengthLabel   = document.getElementById('strengthLabel');
+  const signupPassword = document.getElementById("signupPassword");
+  const confirmPassword = document.getElementById("confirmPassword");
+  const strengthBars = document.querySelectorAll("#strengthBlock .bars i");
+  const strengthLabel = document.getElementById("strengthLabel");
 
-  const STRENGTH_COLORS = ['#ba1a1a', '#e08a2c', '#2c9ee0', '#1fb5ad'];
-  const STRENGTH_NAMES  = ['Weak', 'Fair', 'Good', 'Strong'];
+  const STRENGTH_COLORS = ["#ba1a1a", "#e08a2c", "#2c9ee0", "#1fb5ad"];
+  const STRENGTH_NAMES = ["Weak", "Fair", "Good", "Strong"];
 
   function evaluate(value) {
     const checks = SmartCareValidators.checkPasswordRules(value);
@@ -24,39 +14,52 @@
 
     Object.keys(checks).forEach((rule) => {
       const li = document.querySelector(`.req-list li[data-rule="${rule}"]`);
-      if (li) li.classList.toggle('met', checks[rule]);
+      if (li) li.classList.toggle("met", checks[rule]);
     });
 
     strengthBars.forEach((bar, i) => {
       const isFilled = value.length > 0 && i < metCount;
-      bar.classList.toggle('filled', isFilled);
-      bar.style.setProperty('--dot-color', isFilled ? STRENGTH_COLORS[metCount - 1] : '');
+      bar.classList.toggle("filled", isFilled);
+      bar.style.setProperty(
+        "--dot-color",
+        isFilled ? STRENGTH_COLORS[metCount - 1] : "",
+      );
     });
 
-    strengthLabel.textContent = value.length === 0 ? 'Password strength' : STRENGTH_NAMES[Math.max(metCount - 1, 0)];
-    strengthLabel.style.color = value.length === 0 ? '' : STRENGTH_COLORS[Math.max(metCount - 1, 0)];
+    strengthLabel.textContent =
+      value.length === 0
+        ? "Password strength"
+        : STRENGTH_NAMES[Math.max(metCount - 1, 0)];
+    strengthLabel.style.color =
+      value.length === 0 ? "" : STRENGTH_COLORS[Math.max(metCount - 1, 0)];
 
     return checks;
   }
 
   function reset() {
     strengthBars.forEach((bar) => {
-      bar.classList.remove('filled');
-      bar.style.removeProperty('--dot-color');
+      bar.classList.remove("filled");
+      bar.style.removeProperty("--dot-color");
     });
-    strengthLabel.textContent = 'Password strength';
-    strengthLabel.style.color = '';
-    document.querySelectorAll('.req-list li').forEach((li) => li.classList.remove('met'));
+    strengthLabel.textContent = "Password strength";
+    strengthLabel.style.color = "";
+    document
+      .querySelectorAll(".req-list li")
+      .forEach((li) => li.classList.remove("met"));
   }
 
   // ---- Event source: keystrokes in the password field ----
-  signupPassword.addEventListener('input', () => {
+  signupPassword.addEventListener("input", () => {
     evaluate(signupPassword.value);
     SmartCareFormHelpers.showError(signupPassword, false);
 
     if (confirmPassword.value) {
       const mismatch = confirmPassword.value !== signupPassword.value;
-      SmartCareFormHelpers.showError(confirmPassword, mismatch, mismatch ? "Passwords don't match." : '');
+      SmartCareFormHelpers.showError(
+        confirmPassword,
+        mismatch,
+        mismatch ? "Passwords don't match." : "",
+      );
     }
   });
 

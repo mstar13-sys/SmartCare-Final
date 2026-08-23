@@ -22,27 +22,30 @@
    whole time — compare js/signup-form.js.
    ========================================================================= */
 (function () {
-  const form        = document.getElementById('loginForm');
-  const email       = document.getElementById('loginEmail');
-  const password    = document.getElementById('loginPassword');
-  const passwordHint = document.getElementById('passwordHint');
-  const forgotLink  = document.getElementById('forgotLink');
-  const submitBtn   = form.querySelector('.submit-btn');
+  const form = document.getElementById("loginForm");
+  const email = document.getElementById("loginEmail");
+  const password = document.getElementById("loginPassword");
+  const passwordHint = document.getElementById("passwordHint");
+  const forgotLink = document.getElementById("forgotLink");
+  const submitBtn = form.querySelector(".submit-btn");
 
   // ---- Clear inline errors as the user types ----
   [email, password].forEach((el) => {
-    el.addEventListener('input', () => SmartCareFormHelpers.showError(el, false));
+    el.addEventListener("input", () =>
+      SmartCareFormHelpers.showError(el, false),
+    );
   });
 
   // ---- "Forgot password?" click ----
-  if (forgotLink) forgotLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    showToast({
-      type: 'success',
-      title: 'Check your inbox',
-      body: 'If an account exists, a reset link is on its way.'
+  if (forgotLink)
+    forgotLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      showToast({
+        type: "success",
+        title: "Check your inbox",
+        body: "If an account exists, a reset link is on its way.",
+      });
     });
-  });
 
   /* =======================================================================
      Focus / Blur event demo
@@ -51,26 +54,15 @@
      Event listener → 'focus' and 'blur'
      Event handler  → show/hide a small hint while the field is focused.
      ========================================================================= */
-  password.addEventListener('focus', () => {
-    if (passwordHint) passwordHint.style.display = 'block';
+  password.addEventListener("focus", () => {
+    if (passwordHint) passwordHint.style.display = "block";
   });
-  password.addEventListener('blur', () => {
-    if (passwordHint) passwordHint.style.display = 'none';
+  password.addEventListener("blur", () => {
+    if (passwordHint) passwordHint.style.display = "none";
   });
 
-  /* =======================================================================
-     Keyboard event demo
-     -----------------------------------------------------------------------
-     Event source  → the password field
-     Event listener → 'keydown'
-     Event handler  → if the key was Enter, submit the form the same way
-                       clicking the Login button would.
-     (Note: browsers already do this automatically for a text field inside
-     a <form>, but this listener makes the keyboard-event handling explicit
-     and easy to point to.)
-     ========================================================================= */
-  password.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
+  password.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
       form.requestSubmit();
     }
   });
@@ -87,39 +79,56 @@
        3. #loginPanel's BUBBLING listener fires last (the default phase,
           on the way back up).
      ========================================================================= */
-  const loginPanel = document.getElementById('loginPanel');
+  const loginPanel = document.getElementById("loginPanel");
 
-  loginPanel.addEventListener('click', () => {
-    console.log('[Propagation] #loginPanel — CAPTURING phase');
-  }, true);
+  loginPanel.addEventListener(
+    "click",
+    () => {
+      console.log("[Propagation] #loginPanel — CAPTURING phase");
+    },
+    true,
+  );
 
-  submitBtn.addEventListener('click', () => {
-    console.log('[Propagation] Login button — target phase');
+  submitBtn.addEventListener("click", () => {
+    console.log("[Propagation] Login button — target phase");
   });
 
-  loginPanel.addEventListener('click', () => {
-    console.log('[Propagation] #loginPanel — BUBBLING phase');
-  }, false);
+  loginPanel.addEventListener(
+    "click",
+    () => {
+      console.log("[Propagation] #loginPanel — BUBBLING phase");
+    },
+    false,
+  );
 
   // ---- Form submission ----
-  form.addEventListener('submit', (e) => {
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    if (submitBtn.classList.contains('loading')) return; // guard against double submits
+    if (submitBtn.classList.contains("loading")) return; // guard against double submits
 
     let valid = true;
-    if (email.value.trim() === '') {
-      SmartCareFormHelpers.showError(email, true, 'Enter your email address.'); valid = false;
+    if (email.value.trim() === "") {
+      SmartCareFormHelpers.showError(email, true, "Enter your email address.");
+      valid = false;
     } else if (!SmartCareValidators.isValidEmail(email.value.trim())) {
-      SmartCareFormHelpers.showError(email, true, 'Enter a valid email address.'); valid = false;
+      SmartCareFormHelpers.showError(
+        email,
+        true,
+        "Enter a valid email address.",
+      );
+      valid = false;
     }
-    if (password.value.trim() === '') { SmartCareFormHelpers.showError(password, true, 'Enter your password.'); valid = false; }
+    if (password.value.trim() === "") {
+      SmartCareFormHelpers.showError(password, true, "Enter your password.");
+      valid = false;
+    }
 
     if (!valid) return;
 
-    NotificationCenter.publish('login:attempt', { email: email.value.trim() });
+    NotificationCenter.publish("login:attempt", { email: email.value.trim() });
 
-    submitBtn.classList.add('loading');
+    submitBtn.classList.add("loading");
     submitBtn.disabled = true;
 
     const body = new FormData(form); // includes the hidden csrf_token field automatically
@@ -139,7 +148,7 @@
      ========================================================================= */
   function submitSync(body) {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', '../php/login.php', false); // false = synchronous
+    xhr.open("POST", "../php/login.php", false); // false = synchronous
 
     try {
       xhr.send(body);
@@ -149,12 +158,14 @@
       handleLoginResponse(data);
     } catch (err) {
       finishSubmit();
-      NotificationCenter.publish('login:failed', { message: "Couldn't reach the server. Please try again." });
+      NotificationCenter.publish("login:failed", {
+        message: "Couldn't reach the server. Please try again.",
+      });
     }
   }
 
   function finishSubmit() {
-    submitBtn.classList.remove('loading');
+    submitBtn.classList.remove("loading");
     submitBtn.disabled = false;
   }
 
@@ -162,7 +173,7 @@
     if (data.success) {
       form.reset();
       SmartCareFormHelpers.clearFieldStates([email, password]);
-      NotificationCenter.publish('login:success', { message: data.message });
+      NotificationCenter.publish("login:success", { message: data.message });
     } else {
       if (data.errors) {
         Object.keys(data.errors).forEach((id) => {
@@ -173,9 +184,9 @@
       // Wrong credentials (no field-level detail from the server) is
       // reported through NotificationCenter's toast + message area only —
       // no inline field marking, since it'd just repeat the same message.
-      password.value = '';
+      password.value = "";
       password.focus();
-      NotificationCenter.publish('login:failed', { message: data.message });
+      NotificationCenter.publish("login:failed", { message: data.message });
     }
   }
 })();

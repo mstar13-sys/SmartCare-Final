@@ -1,12 +1,3 @@
-/* =========================================================================
-   Tab Switcher
-   -------------------------------------------------------------------------
-   switchTab('login' | 'signup') shows the right pane and updates the tab
-   buttons. It's a plain function, so anything that needs to change tabs —
-   the tab buttons themselves, the "Sign up" / "Log in" links at the
-   bottom of each form, or signup-form.js after a successful signup —
-   just calls switchTab(...) directly.
-   ========================================================================= */
 
 function switchTab(tabName) {
   const switcher = document.getElementById("switcher");

@@ -1,23 +1,4 @@
-/* =========================================================================
-   Auth Pane Switcher
-   -------------------------------------------------------------------------
-   login and signup used to be two separate PHP pages, so switching between
-   them was a real navigation (see js/page-transition.js, now unused here).
-   They're now two panes on one page (auth/login.php?mode=...), so this
-   file swaps them in place: the outgoing pane slides out while the
-   incoming one slides in from the other side, the pill switcher's thumb
-   slides in sync, and the URL is kept in sync with history.pushState so
-   the browser's back/forward buttons and reloads still land on the right
-   pane. Every link that used to trigger a page load (the pill switcher,
-   the "Sign up" / "Log in" links at the bottom of each form) now carries
-   a `data-switch-target` attribute and is intercepted here instead.
 
-   Falls back to a normal navigation (letting the link's href do its
-   thing) if JS fails to find what it needs, or if the user has asked for
-   reduced motion — in the latter case the pane still swaps instantly via
-   the CSS `prefers-reduced-motion` override in animations.css, since that
-   only shortens the transition, it doesn't disable this script.
-   ========================================================================= */
 (function () {
   const panes = document.getElementById("authPanes");
   const switcher = document.querySelector(".switcher");
