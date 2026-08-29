@@ -1,3 +1,67 @@
+/* Authentication split-screen safeguards
+   Keeps the SmartCare brand panel visually stable while the signup form
+   grows taller. No form controls, icons, or JavaScript behavior are changed. */
+@media (max-width: 1180px) and (min-width: 981px) {
+  .shell {
+    grid-template-columns: minmax(320px, 0.9fr) minmax(400px, 1.1fr);
+  }
+
+  .brand-copy h1 {
+    font-size: clamp(28px, 3.1vw, 36px);
+  }
+
+  .brand-copy p.tagline {
+    font-size: 14.5px;
+  }
+
+  .pulse-wrap {
+    margin-top: 26px;
+  }
+
+  .float-cards {
+    margin-top: 24px;
+    transform: scale(0.92);
+    transform-origin: left top;
+  }
+
+  .feature-list {
+    margin-top: 24px;
+    gap: 12px;
+  }
+}
+
+@media (max-height: 760px) and (min-width: 981px) {
+  .brand-panel {
+    padding-top: 28px;
+    padding-bottom: 24px;
+  }
+
+  .brand-copy {
+    padding-top: 16px;
+  }
+
+  .pulse-wrap {
+    margin-top: 18px;
+    height: 48px;
+  }
+
+  .float-cards {
+    margin-top: 16px;
+    height: 96px;
+    transform: scale(0.82);
+    transform-origin: left top;
+  }
+
+  .feature-list {
+    margin-top: 10px;
+    gap: 8px;
+  }
+
+  .feature-list .fi {
+    font-size: 13px;
+  }
+}
+
 /* =======================================================
    Responsive breakpoints
    ======================================================= */

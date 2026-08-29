@@ -3,13 +3,19 @@
    ======================================================= */
 .shell {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  grid-template-columns: minmax(360px, 1.05fr) minmax(420px, 1fr);
   min-height: 100vh;
+  align-items: stretch;
 }
 
 /* ---------- Brand panel (left) ---------- */
 .brand-panel {
-  position: relative;
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  max-height: 100vh;
+  min-height: 640px;
   background: radial-gradient(
     120% 140% at 15% 0%,
     #0a5bb8 0%,
@@ -17,7 +23,7 @@
     #002454 100%
   );
   color: #eef3fc;
-  padding: 56px 56px 44px;
+  padding: clamp(32px, 5vh, 56px) clamp(32px, 4vw, 56px) clamp(28px, 4vh, 44px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -68,7 +74,7 @@
   position: relative;
   z-index: 2;
   margin-top: auto;
-  padding-top: 40px;
+  padding-top: clamp(20px, 4vh, 40px);
   max-width: 440px;
 }
 .brand-copy h1 {
