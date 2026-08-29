@@ -17,6 +17,7 @@ const SmartCareValidators = (() => {
     return {
       len: value.length >= 8,
       upper: /[A-Z]/.test(value),
+      lower: /[a-z]/.test(value),
       num: /[0-9]/.test(value),
       special: /[^A-Za-z0-9]/.test(value),
     };

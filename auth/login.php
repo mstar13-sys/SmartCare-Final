@@ -58,15 +58,22 @@ require __DIR__ . '/../includes/header.php';
             <p>Set up secure access in under a minute.</p>
           </div>
           <form id="signupForm" novalidate>
-            <div class="field"><label class="flabel">I am a</label>
-              <div class="role-group" role="radiogroup" aria-label="Account type"><label class="role-card"><input type="radio" name="role" value="patient" checked /><span class="box"><svg class="role-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <!-- <div class="field"><label class="flabel">I am a</label>
+              <div class="role-group" role="radiogroup" aria-label="Account type">
+                <label class="role-card">
+                  <input type="radio" name="role" value="patient" checked />
+                  <span class="box"><svg class="role-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                       <circle cx="12" cy="7" r="4" />
-                    </svg><span>Patient</span></span></label><label class="role-card"><input type="radio" name="role" value="staff" /><span class="box"><svg class="role-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    </svg><span>Patient</span></span></label>
+                  
+                     <label class="role-card">
+                  <input type="radio" name="role" value="staff" /><span class="box"><svg class="role-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
                       <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-                    </svg><span>Clinic staff</span></span></label></div>
-            </div>
+                    </svg><span>Clinic staff</span></span></label> 
+              </div>
+            </div> -->
             <div class="field"><label class="flabel" for="fullName">Full name</label>
               <div class="input-wrap"><span class="ic-left"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
@@ -95,11 +102,12 @@ require __DIR__ . '/../includes/header.php';
                   </svg></button></div>
             </div>
             <div class="strength" id="strengthBlock">
-              <div class="bars"><i></i><i></i><i></i><i></i></div>
+              <div class="bars"><i></i><i></i><i></i><i></i><i></i></div>
               <p class="label" id="strengthLabel">Password strength</p>
               <ul class="req-list">
                 <li data-rule="len"><span class="dot"></span>8+ characters</li>
                 <li data-rule="upper"><span class="dot"></span>One uppercase letter</li>
+                <li data-rule="lower"><span class="dot"></span>One lower character</li>
                 <li data-rule="num"><span class="dot"></span>One number</li>
                 <li data-rule="special"><span class="dot"></span>One special character</li>
               </ul>

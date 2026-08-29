@@ -5,8 +5,8 @@
   const strengthBars = document.querySelectorAll("#strengthBlock .bars i");
   const strengthLabel = document.getElementById("strengthLabel");
 
-  const STRENGTH_COLORS = ["#ba1a1a", "#e08a2c", "#2c9ee0", "#1fb5ad"];
-  const STRENGTH_NAMES = ["Weak", "Fair", "Good", "Strong"];
+  const STRENGTH_COLORS = ["#ba1a1a", "#e08a2c", "#2c9ee0", "#1fb5ad", "#51d8d1"];
+  const STRENGTH_NAMES = ["Weak", "Fair", "Good", "Strong", "Very Strong"];
 
   function evaluate(value) {
     const checks = SmartCareValidators.checkPasswordRules(value);
@@ -32,6 +32,15 @@
         : STRENGTH_NAMES[Math.max(metCount - 1, 0)];
     strengthLabel.style.color =
       value.length === 0 ? "" : STRENGTH_COLORS[Math.max(metCount - 1, 0)];
+
+    // Keep the strength indicator visible once the user enters a password.
+    // if (value.length === 0) {
+    //   strengthLabel.textContent = "Password strength";
+    //   strengthLabel.style.color = "";
+    // } else {
+    //   strengthLabel.textContent = STRENGTH_NAMES[Math.max(metCount - 1, 0)];
+    //   strengthLabel.style.color = STRENGTH_COLORS[Math.max(metCount - 1, 0)];
+    // }
 
     return checks;
   }

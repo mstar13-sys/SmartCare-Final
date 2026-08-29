@@ -482,7 +482,7 @@ form {
 }
 .strength .bars {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 6px;
   height: 5px;
 }
