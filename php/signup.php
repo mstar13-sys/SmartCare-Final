@@ -8,9 +8,9 @@
    browser entirely — then checks the email isn't already taken and
    inserts the new account with a hashed password.
    ========================================================================= */
-require __DIR__ . '/config.php';
+require __DIR__ . '/request.php';
 require __DIR__ . '/validators.php';
-require __DIR__ . '/db.php'; // gives us $pdo
+require __DIR__ . '/config.php'; // gives us $pdo
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     json_response(false, 'Invalid request method.');
@@ -51,10 +51,6 @@ if ($errors) {
     json_response(false, 'Please fix the highlighted fields.', ['errors' => $errors]);
 }
 
-// ---- Reject duplicate emails AND duplicate phone numbers before touching
-//      the database further. Phone numbers are compared with formatting
-//      stripped out, so "0917 123 4567" and "0917-123-4567" are correctly
-//      caught as the same number even though they're different strings. ----
 $normalizedPhone    = normalize_phone($phone);
 $normalizedPhoneSql = normalize_phone_sql('phone');
 

@@ -24,8 +24,7 @@ learn early on in JavaScript:
 
 1. `element.addEventListener('event-name', function)` to *listen* for
    something the user does.
-2. A normal function call, like `showToast(...)` or `switchTab(...)`,
-   to *react* to it.
+2. A normal function call, like `showToast(...)`, to *react* to it.
 
 There is no custom event system, no "pub/sub bus", no `emit()` — just
 listeners and function calls, the same pattern you'd use in any
@@ -47,13 +46,12 @@ button.addEventListener('click', () => {
 |---|---|
 | `js/validators.js` | Plain functions that check if an email/phone/password is valid. No DOM, no events — just `if` statements and regular expressions. |
 | `js/form-helpers.js` | Small shared helpers (`showError`, `clearFieldStates`) used by both forms to show/hide the little red error messages under each field. |
-| `js/tab-switcher.js` | Listens for clicks on the **Log In / Sign Up** tabs (and the "Sign up" / "Log in" links at the bottom of each form) and shows the matching pane. Exposes `switchTab('login' | 'signup')` so other files can switch tabs too. |
 | `js/password-toggle.js` | Listens for clicks on the little "eye" icon next to a password field and toggles it between hidden (`••••`) and visible text. |
 | `js/password-strength.js` | Listens for typing (`input` event) in the sign-up password field and updates the strength meter + checklist (8+ characters, uppercase, number, special character) live. |
 | `js/toast.js` | Defines one function, `showToast({ type, title, body })`, that pops up the little notification card in the bottom-right corner. Any file can call it whenever it needs to tell the user something. |
 | `js/notification-center.js` | A tiny publish/subscribe hub used only for login events (`login:attempt`, `login:success`, `login:failed`). `login-form.js` publishes; this file's own subscribers call `showToast(...)` in response. See section 7. |
 | `js/login-form.js` | Listens for the login form being submitted, validates it, demonstrates event propagation, sends the request synchronously, and publishes login events. |
-| `js/signup-form.js` | Validates the sign-up form and posts it to PHP. On success it also calls `switchTab('login')` to send the user back to the login tab. |
+| `js/signup-form.js` | Validates the sign-up form and posts it to PHP **asynchronously** (`fetch()`), so the page stays responsive. On success it redirects to `login.php`. |
 | `js/dashboard.js` | Adds simple click handlers for the authenticated dashboard quick actions. |
 
 Everything except the login form's event flow (see section 7) is still
@@ -97,8 +95,10 @@ This is the easiest way to see the whole system in action:
      it calls `SmartCareFormHelpers.showError(...)` to show the red
      error message and **stops here**.
    - Otherwise it publishes `login:attempt` (see section 7), shows the
-     loading spinner, and sends the request to `php/login.php` — either
-   synchronously. Sign-up always uses an asynchronous `fetch()` request.
+     loading spinner, and sends the request to `php/login.php` using a
+     synchronous `XMLHttpRequest` — the page freezes until PHP responds.
+     Sign-up always uses an asynchronous `fetch()` request instead, and
+     stays responsive the whole time. See section 8.
 4. When PHP responds:
    - If the demo credentials match, `login-form.js` publishes
      `login:success`, which is what actually triggers the success toast.
@@ -112,25 +112,16 @@ see section 7 for why.
 
 ---
 
-## 5. How sign-up → auto-switch to Login works
-
-This is the one place where one form's JS causes another part of the
-UI (the tab switcher) to do something. It's still just a plain function
-call:
+## 5. What happens after a successful sign-up
 
 1. User fills in and submits the sign-up form.
 2. `signup-form.js` validates every field (name, email, phone, password
    rules, confirm-password match, terms checkbox).
-3. After the simulated network delay succeeds, it:
-   - Calls `showToast({ type: 'success', title: 'Account created', ... })`.
+3. It posts to `php/signup.php` with `fetch()` (asynchronously — the
+   page stays responsive while this runs). Once that succeeds, it:
    - Resets the form and the password-strength meter.
-   - Calls `switchTab('login')` — the exact same function
-     `tab-switcher.js` uses internally when you click the "Log In" tab
-     yourself.
-
-Because `switchTab()` is just a normal function attached to the page
-(not hidden inside some event system), any file can call it the same
-way you'd call `Math.round()` or `array.push()`.
+   - Shows a success dialog, and on confirm, redirects the browser to
+     `login.php` with `window.location.href`.
 
 ---
 
@@ -141,12 +132,16 @@ listeners, in a specific order, because of how DOM events travel through
 their ancestors. `login-form.js` sets these up purely to demonstrate it —
 open the console (F12) and click Login to see:
 
-1. **Capturing phase** — `paneLogin`'s listener registered with
+1. **Capturing phase** — `#loginPanel`'s listener registered with
    `addEventListener('click', fn, true)` fires first, on the way *down*
    from the document to the button.
 2. **Target phase** — the Login button's own `click` listener fires next.
-3. **Bubbling phase** — `paneLogin`'s other listener (registered without
+3. **Bubbling phase** — `#loginPanel`'s other listener (registered without
    `true`, the default) fires last, on the way back *up*.
+
+`#loginPanel` is the actual login card element (`<section id="loginPanel">`
+in `auth/login.php`) — a real container that wraps the whole form, not
+just an alias for the form itself.
 
 ```js
 pane.addEventListener('click', fn, true);  // capturing — runs 1st
@@ -190,12 +185,18 @@ you can read the whole thing in one file.
 
 ## 8. Synchronous vs. asynchronous processing
 
-The mode controls are intentionally hidden to keep the learner experience
-simple. Login uses a synchronous `XMLHttpRequest` and PHP pauses for two
-seconds, so the page freezes while credentials are checked. Sign-up uses
-asynchronous `fetch()`, so the page remains responsive during the request.
-This makes the difference part of each form: login demonstrates synchronous
-processing and sign-up demonstrates asynchronous processing.
+Each form deliberately uses a different processing mode, so the two can
+be compared directly:
+
+- **Login (`js/login-form.js`)** uses a **synchronous** `XMLHttpRequest`
+  (`xhr.open('POST', url, false)`), and `php/login.php` deliberately
+  `sleep(2)`s. Because the request is synchronous, `xhr.send()` doesn't
+  return until PHP responds — the whole page is frozen for those ~2
+  seconds. Try typing in another field while logging in: nothing happens
+  until the request finishes.
+- **Sign-up (`js/signup-form.js`)** uses **asynchronous** `fetch()`. The
+  page stays fully responsive while `php/signup.php` runs — you can keep
+  typing, and the submit button's spinner keeps animating.
 
 Both forms show progress and result messages in their message area and use
 SweetAlert2 when the CDN is available, with the built-in toast as a fallback.
@@ -219,8 +220,8 @@ side picks it up automatically — no separate fetch just to get a token.
 | File | What it does |
 |---|---|
 | `index.php` | Starts the session, creates/reuses the CSRF token, handles `?logout=1`, and shows a "Logged in as…" banner when `$_SESSION['user']` is set. |
-| `php/config.php` | Starts the session for the endpoints below, and defines `json_response()` / `check_csrf()` shared by both. |
-| `php/db.php` | Opens one PDO connection to the `smartcare` MySQL database, used by both endpoints below. |
+| `php/request.php` | Starts the endpoint session and defines the shared `json_response()` / `check_csrf()` request helpers. |
+| `php/config.php` | Contains the database settings and opens the shared PDO connection. |
 | `php/validators.php` | Server-side twin of `js/validators.js` — same email/phone/password rules, same names, just in PHP. |
 | `php/login.php` | Checks the CSRF token, validates the fields, looks the account up by email, verifies the password with `password_verify()`, and stores `$_SESSION['user']` on success. |
 | `php/signup.php` | Checks the CSRF token, validates every field server-side, rejects the email if it's already taken, and inserts the new account with `password_hash()`. |
@@ -236,7 +237,7 @@ side picks it up automatically — no separate fetch just to get a token.
    match `$_SESSION['csrf_token']`, it rejects the request immediately
    with "Your session expired."
 4. It then re-validates every field (using `php/validators.php` for
-   signup) and talks to the database through `$pdo` (from `php/db.php`) —
+   signup) and talks to the database through `$pdo` (from `php/config.php`) —
    a `SELECT` + `password_verify()` for login, or a duplicate-email
    check + `INSERT` with `password_hash()` for signup.
 5. It replies with JSON: `{ success, message, errors? }`.
@@ -265,10 +266,11 @@ email:    demo@smartcare.com
 password: Demo1234!
 ```
 
-`php/db.php` is where the connection details live:
+`php/config.php` is where the connection details live:
 
 ```php
 $host = "127.0.0.1";
+$port = 3306;
 $db   = "smartcare";
 $user = "root";
 $pass = "";
@@ -277,10 +279,10 @@ $pass = "";
 These defaults match a typical local install (XAMPP/MAMP/Laragon —
 `root` user, no password). If your setup is different, that's the only
 file you need to edit. Every endpoint that touches the database does
-`require __DIR__ . '/db.php';` and then just uses `$pdo` — prepared
+`require __DIR__ . '/config.php';` and then just uses `$pdo` — prepared
 statements throughout, so user input never gets concatenated into SQL.
 
 If the connection fails (wrong credentials, or the database/table don't
-exist yet), `php/db.php` replies with the same `{ success: false,
+exist yet), `php/config.php` replies with the same `{ success: false,
 message }` JSON shape as every other endpoint, so the form shows a
 clear error toast instead of a blank PHP error page.

@@ -1,15 +1,3 @@
-/* =========================================================================
-   Toast Notifications
-   -------------------------------------------------------------------------
-   showToast() is a plain function that pops up a little message card in
-   the corner of the screen. Any other script just calls it directly when
-   it wants to tell the user something, e.g:
-
-       showToast({ type: 'success', title: 'Welcome back', body: '...' });
-
-   No events, no "bus", no listening required — it's a normal function
-   call, the same way you'd call any other helper.
-   ========================================================================= */
 
 const SUCCESS_ICON =
   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="m8.5 12.3 2.4 2.4 4.6-5.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -17,62 +5,59 @@ const SUCCESS_ICON =
 const ERROR_ICON =
   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 8v5M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 
-function showToast({ type = 'success', title, body }) {
+function showToast({ type = "success", title, body }) {
   if (window.Swal) {
     // Centered, self-dismissing alert — same "center" position as
     // showSuccessDialog() below, so every SweetAlert in the app appears
     // in the same spot instead of some in a corner and some centered.
     Swal.fire({
-      icon: type === 'error' ? 'error' : 'success',
+      icon: type === "error" ? "error" : "success",
       title,
       text: body,
       timer: 3200,
       timerProgressBar: true,
       showConfirmButton: false,
-      position: 'center',
+      position: "center",
     });
     return;
   }
 
-  const stack = document.getElementById('toastStack');
+  const stack = document.getElementById("toastStack");
 
-  const el = document.createElement('div');
-  el.className = 'toast' + (type === 'error' ? ' error' : '');
+  const el = document.createElement("div");
+  el.className = "toast" + (type === "error" ? " error" : "");
   el.innerHTML =
-    `<span class="ic">${type === 'error' ? ERROR_ICON : SUCCESS_ICON}</span>` +
+    `<span class="ic">${type === "error" ? ERROR_ICON : SUCCESS_ICON}</span>` +
     `<div><p class="tt">${title}</p><p class="tb">${body}</p></div>`;
 
   stack.appendChild(el);
 
   // Auto-dismiss after a few seconds.
   setTimeout(() => {
-    el.classList.add('leaving');
+    el.classList.add("leaving");
     setTimeout(() => el.remove(), 320);
   }, 4200);
 }
 
-/* =========================================================================
-   Centered success dialog
-   -------------------------------------------------------------------------
-   Unlike showToast() (a small, self-dismissing corner notification), this
-   is a centered, blocking SweetAlert2 modal for moments that matter enough
-   to make the person acknowledge them before moving on — e.g. "Account
-   created" or "Logged in" — right before sending them to the next page.
-   The redirect only happens once they click the confirm button, not on a
-   timer, so it never yanks the page out from under someone still reading.
-   ========================================================================= */
-function showSuccessDialog({ title, text, confirmButtonText = 'OK', onConfirm }) {
-  const primaryColor = getComputedStyle(document.documentElement)
-    .getPropertyValue('--primary').trim() || '#003f87';
+function showSuccessDialog({
+  title,
+  text,
+  confirmButtonText = "OK",
+  onConfirm,
+}) {
+  const primaryColor =
+    getComputedStyle(document.documentElement)
+      .getPropertyValue("--primary")
+      .trim() || "#003f87";
 
   if (window.Swal) {
     Swal.fire({
-      icon: 'success',
+      icon: "success",
       title,
       text,
       confirmButtonText,
       confirmButtonColor: primaryColor,
-      position: 'center',
+      position: "center",
       allowOutsideClick: false,
       allowEscapeKey: false,
     }).then(() => {
