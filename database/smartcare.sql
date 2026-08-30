@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS users (
     email         VARCHAR(150)        NOT NULL,
     phone         VARCHAR(30)         NOT NULL,
     password_hash VARCHAR(255)        NOT NULL,
-    role          ENUM('patient','staff') NOT NULL DEFAULT 'patient',
+    role          ENUM('patient','staff','superadmin') NOT NULL DEFAULT 'patient',
     created_at    TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     UNIQUE KEY uq_users_email (email),
@@ -36,6 +36,13 @@ CREATE TABLE IF NOT EXISTS users (
 -- (it will fail loudly if duplicate phone numbers already exist —
 -- clean those up first, then re-run it):
 --   ALTER TABLE users ADD UNIQUE KEY uq_users_phone (phone);
+
+-- ---- Already have this table without the 'superadmin' role? ----
+-- The ENUM above only includes 'superadmin' on fresh installs. Run this
+-- once against an existing database to allow it retroactively, then set
+-- a specific account to it:
+--   ALTER TABLE users MODIFY role ENUM('patient','staff','superadmin') NOT NULL DEFAULT 'patient';
+--   UPDATE users SET role = 'superadmin' WHERE email = 'the-account@example.com';
 
 -- ---- Seed the same demo account the README and login form mention ----
 -- Password is "Demo1234!" — already hashed with PHP's password_hash(),

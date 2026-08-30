@@ -8,9 +8,9 @@
    browser entirely — then checks the email isn't already taken and
    inserts the new account with a hashed password.
    ========================================================================= */
-require __DIR__ . '/config.php';
+require __DIR__ . '/request.php';
 require __DIR__ . '/validators.php';
-require __DIR__ . '/db.php'; // gives us $pdo
+require __DIR__ . '/config.php'; // gives us $pdo
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     json_response(false, 'Invalid request method.');

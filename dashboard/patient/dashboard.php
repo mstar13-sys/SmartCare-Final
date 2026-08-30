@@ -8,6 +8,10 @@ if ($currentUser['role'] === 'staff') {
   header('Location: ../admin/dashboard.php');
   exit;
 }
+if ($currentUser['role'] === 'superadmin') {
+  header('Location: ../superadmin/dashboard.php');
+  exit;
+}
 $pageTitle = 'SmartCare - Patient Dashboard';
 $assetRoot = '../..';
 require __DIR__ . '/../../includes/header.php';

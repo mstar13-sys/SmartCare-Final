@@ -2,10 +2,7 @@
 require __DIR__ . '/includes/start.php';
 
 if ($currentUser) {
-    $dashboard = $currentUser['role'] === 'staff'
-        ? 'dashboard/admin/dashboard.php'
-        : 'dashboard/patient/dashboard.php';
-    header('Location: ' . $dashboard);
+    header('Location: ' . role_dashboard_path($currentUser['role']));
     exit;
 }
 

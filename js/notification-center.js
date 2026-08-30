@@ -49,11 +49,8 @@ NotificationCenter.subscribe("login:success", (data) => {
     title: "Logged in!",
     text: data.message,
     confirmButtonText: "Okay",
-    // A plain reload is enough to get to the right dashboard: includes/start.php
-    // on every auth page checks the session on load and redirects signed-in
-    // users to their role's dashboard automatically.
     onConfirm: () => {
-      window.location.reload();
+      window.location.href = data.redirect || "../index.php";
     },
   });
 });

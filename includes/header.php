@@ -18,6 +18,9 @@ $assetRoot = $assetRoot ?? '..';
     <link rel="stylesheet" href="<?php echo $assetRoot; ?>/css/components.css" />
     <link rel="stylesheet" href="<?php echo $assetRoot; ?>/css/animations.css" />
     <link rel="stylesheet" href="<?php echo $assetRoot; ?>/css/responsive.css" />
+    <?php foreach ($extraStyles ?? [] as $href): ?>
+    <link rel="stylesheet" href="<?php echo $href; ?>" />
+    <?php endforeach; ?>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 

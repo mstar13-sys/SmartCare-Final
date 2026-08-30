@@ -1,0 +1,291 @@
+/* =======================================================
+   Superadmin console — sidebar dashboard shell
+   UI-only: demo content, no data fetching. Reuses the same
+   design tokens as the rest of the app (css/variables.css)
+   so it matches the brand panel, cards, and buttons already
+   used on the auth pages and the patient/staff dashboards.
+   ======================================================= */
+
+.console-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+/* ---------- Sidebar ---------- */
+.console-sidebar {
+  width: 264px;
+  flex-shrink: 0;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  color: #eef3fc;
+  background: radial-gradient(
+    120% 140% at 15% 0%,
+    #0a5bb8 0%,
+    #003f87 46%,
+    #002454 100%
+  );
+}
+.console-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+  margin-bottom: 30px;
+}
+.console-brand .logo-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.console-brand .name {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+
+.console-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.console-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #b9cceb;
+  text-decoration: none;
+  transition: background 0.18s var(--ease), color 0.18s var(--ease);
+}
+.console-nav-item:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+.console-nav-item.is-active {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+.console-nav-item .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #5ba6ff;
+  flex-shrink: 0;
+  opacity: 0;
+}
+.console-nav-item.is-active .dot {
+  opacity: 1;
+}
+.console-nav-group {
+  margin-top: 2px;
+}
+.console-nav-sub {
+  display: block;
+  padding: 6px 12px 6px 34px;
+  font-size: 12px;
+  color: #9fb6de;
+  text-decoration: none;
+}
+.console-nav-sub:hover {
+  color: #fff;
+}
+.console-nav-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
+  margin: 14px 4px;
+}
+
+/* ---------- Main column ---------- */
+.console-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.console-topbar {
+  height: 70px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--outline-soft);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(20px, 3vw, 36px);
+}
+.console-topbar h1 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.console-user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  color: var(--ink-variant);
+}
+.console-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.console-logout {
+  color: var(--primary);
+  font-size: 12.5px;
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px solid var(--primary);
+  padding-bottom: 2px;
+}
+
+.console-content {
+  padding: clamp(20px, 3vw, 32px) clamp(20px, 3vw, 36px) 48px;
+}
+
+/* ---------- Stat cards ---------- */
+.console-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.console-stat {
+  background: var(--surface);
+  border: 1px solid var(--outline-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  padding: 18px 20px;
+}
+.console-stat .label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-variant);
+  margin-bottom: 8px;
+}
+.console-stat .value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+/* ---------- Panels ---------- */
+.console-panel {
+  background: var(--surface);
+  border: 1px solid var(--outline-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  padding: 20px 22px;
+  margin-bottom: 20px;
+}
+.console-panel-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.console-cta {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: inherit;
+  padding: 9px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.18s var(--ease);
+}
+.console-cta:hover {
+  background: var(--primary-light);
+}
+
+.console-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--outline-soft);
+}
+.console-row:last-child {
+  border-bottom: none;
+  padding-bottom: 2px;
+}
+.console-row .who {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.console-row .meta {
+  font-size: 12px;
+  color: var(--ink-variant);
+  margin-top: 2px;
+}
+.console-row-btn {
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--outline-soft);
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  font-family: inherit;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s var(--ease);
+}
+.console-row-btn:hover {
+  background: var(--bg);
+}
+.console-row-btn:last-child {
+  border-bottom: none;
+}
+
+.console-pill {
+  flex-shrink: 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.console-pill.active {
+  background: var(--teal-light);
+  color: var(--teal);
+}
+.console-pill.pending {
+  background: #fff3d6;
+  color: #9a6500;
+}
+
+@media (max-width: 900px) {
+  .console-sidebar {
+    display: none;
+  }
+  .console-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

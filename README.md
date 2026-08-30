@@ -220,8 +220,8 @@ side picks it up automatically — no separate fetch just to get a token.
 | File | What it does |
 |---|---|
 | `index.php` | Starts the session, creates/reuses the CSRF token, handles `?logout=1`, and shows a "Logged in as…" banner when `$_SESSION['user']` is set. |
-| `php/config.php` | Starts the session for the endpoints below, and defines `json_response()` / `check_csrf()` shared by both. |
-| `php/db.php` | Opens one PDO connection to the `smartcare` MySQL database, used by both endpoints below. |
+| `php/request.php` | Starts the endpoint session and defines the shared `json_response()` / `check_csrf()` request helpers. |
+| `php/config.php` | Contains the database settings and opens the shared PDO connection. |
 | `php/validators.php` | Server-side twin of `js/validators.js` — same email/phone/password rules, same names, just in PHP. |
 | `php/login.php` | Checks the CSRF token, validates the fields, looks the account up by email, verifies the password with `password_verify()`, and stores `$_SESSION['user']` on success. |
 | `php/signup.php` | Checks the CSRF token, validates every field server-side, rejects the email if it's already taken, and inserts the new account with `password_hash()`. |
@@ -237,7 +237,7 @@ side picks it up automatically — no separate fetch just to get a token.
    match `$_SESSION['csrf_token']`, it rejects the request immediately
    with "Your session expired."
 4. It then re-validates every field (using `php/validators.php` for
-   signup) and talks to the database through `$pdo` (from `php/db.php`) —
+   signup) and talks to the database through `$pdo` (from `php/config.php`) —
    a `SELECT` + `password_verify()` for login, or a duplicate-email
    check + `INSERT` with `password_hash()` for signup.
 5. It replies with JSON: `{ success, message, errors? }`.
@@ -266,10 +266,11 @@ email:    demo@smartcare.com
 password: Demo1234!
 ```
 
-`php/db.php` is where the connection details live:
+`php/config.php` is where the connection details live:
 
 ```php
 $host = "127.0.0.1";
+$port = 3306;
 $db   = "smartcare";
 $user = "root";
 $pass = "";
@@ -278,10 +279,10 @@ $pass = "";
 These defaults match a typical local install (XAMPP/MAMP/Laragon —
 `root` user, no password). If your setup is different, that's the only
 file you need to edit. Every endpoint that touches the database does
-`require __DIR__ . '/db.php';` and then just uses `$pdo` — prepared
+`require __DIR__ . '/config.php';` and then just uses `$pdo` — prepared
 statements throughout, so user input never gets concatenated into SQL.
 
 If the connection fails (wrong credentials, or the database/table don't
-exist yet), `php/db.php` replies with the same `{ success: false,
+exist yet), `php/config.php` replies with the same `{ success: false,
 message }` JSON shape as every other endpoint, so the form shows a
 clear error toast instead of a blank PHP error page.

@@ -4,6 +4,10 @@ if (!$currentUser) {
   header('Location: ../../auth/login.php');
   exit;
 }
+if ($currentUser['role'] === 'superadmin') {
+  header('Location: ../superadmin/dashboard.php');
+  exit;
+}
 if ($currentUser['role'] !== 'staff') {
   header('Location: ../patient/dashboard.php');
   exit;

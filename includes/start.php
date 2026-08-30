@@ -21,3 +21,18 @@ if (empty($_SESSION['csrf_token'])) {
 
 $csrfToken = $_SESSION['csrf_token'];
 $currentUser = $_SESSION['user'] ?? null;
+
+/**
+ * Map a user's role to their dashboard path (relative to the site root),
+ * so every page that redirects a logged-in user agrees on where each
+ * role lands. Add new roles here as they're introduced.
+ */
+function role_dashboard_path(string $role): string
+{
+    return match ($role) {
+        'staff'      => 'dashboard/admin/dashboard.php',
+        'superadmin' => 'dashboard/superadmin/dashboard.php',
+        default      => 'dashboard/patient/dashboard.php',
+    };
+}
+

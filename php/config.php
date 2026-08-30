@@ -1,32 +1,29 @@
 <?php
 
-session_start([
-    'cookie_httponly' => true,   // JS can't read the session cookie
-    'cookie_samesite' => 'Lax',  // basic CSRF protection at the cookie level
-]);
+// Database configuration and connection shared by the PHP endpoints.
+$host = '127.0.0.1';
+$port = 3307;
+$db   = 'smartcare_db';
+$user = 'root';
+$pass = 'password';
 
-header('Content-Type: application/json');
-
-// One CSRF token per session. php/csrf.php hands this to the page on load;
-// every form submission sends it back and we compare the two.
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
-/**
- * Send a JSON response and stop. Every endpoint ends with one of these.
- */
-function json_response(bool $success, string $message, array $extra = []): void
-{
-    echo json_encode(array_merge(['success' => $success, 'message' => $message], $extra));
+try {
+    $pdo = new PDO(
+        "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4",
+        $user,
+        $pass,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false,
+        ]
+    );
+} catch (PDOException $e) {
+    http_response_code(500);
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => false,
+        'message' => 'Database connection failed.',
+    ]);
     exit;
-}
-
-//  * Reject the request if the csrf_token field doesn't match the session's.
-function check_csrf(): void
-{
-    $sent = $_POST['csrf_token'] ?? '';
-    if ($sent === '' || !hash_equals($_SESSION['csrf_token'], $sent)) {
-        json_response(false, 'Your session expired. Please refresh the page and try again.');
-    }
 }

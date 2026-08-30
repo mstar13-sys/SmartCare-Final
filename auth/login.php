@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../includes/start.php';
 if ($currentUser) {
-  header('Location: ../dashboard/' . ($currentUser['role'] === 'staff' ? 'admin' : 'patient') . '/dashboard.php');
+  header('Location: ../' . role_dashboard_path($currentUser['role']));
   exit;
 }
 $mode = (($_GET['mode'] ?? '') === 'signup') ? 'signup' : 'login';
@@ -27,7 +27,7 @@ require __DIR__ . '/../includes/header.php';
             <h2>Welcome back to SmartCare</h2>
             <p>Securely access your patient dashboard.</p>
           </div>
-          <form id="loginForm" novalidate>
+          <form id="loginForm" method="POST" action="../php/login.php" novalidate>
             <div class="message-area" id="loginMessage" role="status" aria-live="polite"></div>
             <div class="field"><label class="flabel" for="loginEmail">Email address</label>
               <div class="input-wrap"><span class="ic-left"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -36,7 +36,7 @@ require __DIR__ . '/../includes/header.php';
                   </svg></span><input id="loginEmail" name="loginEmail" type="email" placeholder="you@example.com" autocomplete="email" required /></div>
             </div>
             <div class="field">
-              <div class="row-between"><label class="flabel" for="loginPassword">Password</label><a href="#" id="forgotLink">Forgot password?</a></div>
+              <div class="row-between"><label class="flabel" for="loginPassword">Password</label><a href="forgot-password.php" id="forgotLink">Forgot password?</a></div>
               <div class="input-wrap"><span class="ic-left"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
                     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -57,7 +57,7 @@ require __DIR__ . '/../includes/header.php';
             <h2>Create your SmartCare account</h2>
             <p>Set up secure access in under a minute.</p>
           </div>
-          <form id="signupForm" novalidate>
+          <form id="signupForm" method="POST" action="../php/signup.php" novalidate>
             <!-- <div class="field"><label class="flabel">I am a</label>
               <div class="role-group" role="radiogroup" aria-label="Account type">
                 <label class="role-card">

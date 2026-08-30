@@ -123,7 +123,7 @@
 
     const body = new FormData(form); // includes the hidden csrf_token field automatically
 
-    fetch("../php/signup.php", { method: "POST", body })
+    fetch(form.action, { method: form.method, body })
       .then((res) => res.json())
       .then((data) => {
         btn.classList.remove("loading");

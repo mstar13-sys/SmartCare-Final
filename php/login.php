@@ -1,7 +1,7 @@
 <?php
-require __DIR__ . '/config.php';
+require __DIR__ . '/request.php';
 require __DIR__ . '/validators.php';
-require __DIR__ . '/db.php'; // gives us $pdo
+require __DIR__ . '/config.php'; // gives us $pdo
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     json_response(false, 'Invalid request method.');
@@ -42,7 +42,16 @@ if ($account && password_verify($password, $account['password_hash'])) {
         'role'  => $account['role'],
     ];
 
-    json_response(true, "You have been logged in securely. Welcome, {$account['full_name']}.");
+    $dashboardByRole = [
+        'staff' => '../dashboard/admin/dashboard.php',
+        'superadmin' => '../dashboard/superadmin/dashboard.php',
+        'patient' => '../dashboard/patient/dashboard.php',
+    ];
+    $redirect = $dashboardByRole[$account['role']] ?? $dashboardByRole['patient'];
+
+    json_response(true, "You have been logged in securely. Welcome, {$account['full_name']}.", [
+        'redirect' => $redirect,
+    ]);
 }
 
 json_response(false, 'Incorrect email or password. Please try again.');

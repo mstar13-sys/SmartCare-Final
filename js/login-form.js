@@ -26,7 +26,6 @@
   const email = document.getElementById("loginEmail");
   const password = document.getElementById("loginPassword");
   const passwordHint = document.getElementById("passwordHint");
-  const forgotLink = document.getElementById("forgotLink");
   const submitBtn = form.querySelector(".submit-btn");
 
   // ---- Clear inline errors as the user types ----
@@ -37,15 +36,8 @@
   });
 
   // ---- "Forgot password?" click ----
-  if (forgotLink)
-    forgotLink.addEventListener("click", (e) => {
-      e.preventDefault();
-      showToast({
-        type: "success",
-        title: "Check your inbox",
-        body: "If an account exists, a reset link is on its way.",
-      });
-    });
+  // Now a real page (auth/forgot-password.php) with its own form, so this
+  // link just navigates there normally — nothing to intercept here anymore.
 
   /* =======================================================================
      Focus / Blur event demo
@@ -148,7 +140,7 @@
      ========================================================================= */
   function submitSync(body) {
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "../php/login.php", false); // false = synchronous
+    xhr.open(form.method, form.action, false); // false = synchronous
 
     try {
       xhr.send(body);
@@ -173,7 +165,10 @@
     if (data.success) {
       form.reset();
       SmartCareFormHelpers.clearFieldStates([email, password]);
-      NotificationCenter.publish("login:success", { message: data.message });
+      NotificationCenter.publish("login:success", {
+        message: data.message,
+        redirect: data.redirect,
+      });
     } else {
       if (data.errors) {
         Object.keys(data.errors).forEach((id) => {
