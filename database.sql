@@ -1,7 +1,7 @@
 -- SmartCare database setup
 -- Import this file in phpMyAdmin, Adminer, or MySQL.
 
-CREATE DATABASE IF NOT EXISTS smartcare
+CREATE DATABASE IF NOT EXISTS smartcare_db
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
