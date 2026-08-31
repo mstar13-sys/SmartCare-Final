@@ -1,0 +1,44 @@
+document.querySelectorAll("[data-logout-confirmation]").forEach((link) => {
+  link.addEventListener("click", (event) => {
+    event.preventDefault();
+
+    const logoutUrl = link.href;
+
+    if (!window.Swal) {
+      if (window.confirm("Are you sure you want to log out?")) {
+        beginLogout(logoutUrl);
+      }
+      return;
+    }
+
+    const primaryColor =
+      getComputedStyle(document.documentElement)
+        .getPropertyValue("--primary")
+        .trim() || "#003f87";
+
+    Swal.fire({
+      icon: "warning",
+      title: "Log out?",
+      text: "Are you sure you want to log out of SmartCare?",
+      showCancelButton: true,
+      confirmButtonText: "Yes, log out",
+      cancelButtonText: "Stay logged in",
+      confirmButtonColor: primaryColor,
+      reverseButtons: true,
+      focusCancel: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        beginLogout(logoutUrl);
+      }
+    });
+  });
+});
+
+async function beginLogout(logoutUrl) {
+  const loadingStartedAt = SmartCareLoading.show({
+    title: "Logging out...",
+    message: "Please wait while we securely end your session.",
+  });
+  await SmartCareLoading.wait(loadingStartedAt);
+  window.location.assign(logoutUrl);
+}

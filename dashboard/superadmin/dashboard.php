@@ -53,7 +53,7 @@ require __DIR__ . '/../../includes/header.php';
     <header class="console-topbar">
       <h1>Superadmin Dashboard</h1>
       <div class="console-user">
-        <a class="console-logout" href="../../index.php?logout=1">Log out</a>
+        <a class="console-logout" href="../../index.php?logout=1" data-logout-confirmation>Log out</a>
         <span><?php echo htmlspecialchars($displayName); ?></span>
         <span class="console-avatar"><?php echo htmlspecialchars($initials); ?></span>
       </div>

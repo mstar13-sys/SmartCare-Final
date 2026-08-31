@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1560" viewBox="0 0 1800 1560" role="img" aria-labelledby="title desc">
+  <title id="title">SmartCare system flowchart</title>
+  <desc id="desc">A flowchart of SmartCare's browser, authentication, database, role dashboard, and logout flows.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#64748b"/></marker>
+    <style>
+      .bg{fill:#f8fafc}.panel{fill:#fff;stroke:#dbe4ef;stroke-width:2}.node{fill:#fff;stroke:#93a4b8;stroke-width:2}.browser{fill:#eff6ff;stroke:#3b82f6}.server{fill:#ecfdf5;stroke:#10b981}.data{fill:#fff7ed;stroke:#f97316}.dash{fill:#faf5ff;stroke:#a855f7}.warn{fill:#fff1f2;stroke:#f43f5e}.decision{fill:#fffbeb;stroke:#eab308}.line{stroke:#64748b;stroke-width:2.5;fill:none;marker-end:url(#arrow)}.return{stroke:#94a3b8;stroke-width:2;fill:none;stroke-dasharray:7 5;marker-end:url(#arrow)}.label{font:600 17px Inter,Arial,sans-serif;fill:#172554}.body{font:15px Inter,Arial,sans-serif;fill:#334155}.small{font:13px Inter,Arial,sans-serif;fill:#475569}.heading{font:700 24px Inter,Arial,sans-serif;fill:#0f172a}.title{font:800 38px Inter,Arial,sans-serif;fill:#0f172a}.subtitle{font:17px Inter,Arial,sans-serif;fill:#475569}.tag{font:700 13px Inter,Arial,sans-serif;fill:#fff}.yesno{font:700 14px Inter,Arial,sans-serif;fill:#475569}
+    </style>
+  </defs>
+  <rect class="bg" width="1800" height="1560"/>
+  <text class="title" x="70" y="70">SmartCare System Flowchart</text>
+  <text class="subtitle" x="70" y="102">Authentication, account lifecycle, role access, and current dashboard behaviour</text>
+
+  <!-- Main request and session flow -->
+  <rect class="panel" x="50" y="140" width="1700" height="230" rx="20"/>
+  <text class="heading" x="80" y="178">1. Entry and session handling</text>
+  <rect class="node browser" x="90" y="210" width="210" height="92" rx="12"/>
+  <text class="label" x="195" y="246" text-anchor="middle">Visitor opens</text><text class="body" x="195" y="271" text-anchor="middle">index.php</text>
+  <path class="line" d="M300 256 H380"/>
+  <rect class="node server" x="380" y="210" width="300" height="92" rx="12"/>
+  <text class="label" x="530" y="244" text-anchor="middle">includes/start.php</text><text class="body" x="530" y="269" text-anchor="middle">starts secure session + creates CSRF token</text>
+  <path class="line" d="M680 256 H770"/>
+  <path class="decision" d="M880 198 L990 256 L880 314 L770 256 Z"/>
+  <text class="label" x="880" y="252" text-anchor="middle">Session user?</text><text class="small" x="880" y="272" text-anchor="middle">$_SESSION['user']</text>
+  <path class="line" d="M990 256 H1080"/><text class="yesno" x="1027" y="245">Yes</text>
+  <rect class="node dash" x="1080" y="210" width="260" height="92" rx="12"/>
+  <text class="label" x="1210" y="244" text-anchor="middle">Role dashboard</text><text class="body" x="1210" y="269" text-anchor="middle">patient / staff / superadmin</text>
+  <path class="line" d="M880 314 V340 H520 V302"/><text class="yesno" x="720" y="332">No</text>
+  <rect class="node browser" x="1390" y="210" width="300" height="92" rx="12"/>
+  <text class="label" x="1540" y="244" text-anchor="middle">auth/login.php</text><text class="body" x="1540" y="269" text-anchor="middle">Login or Sign Up pane</text>
+  <path class="line" d="M1340 256 H1390"/>
+
+  <!-- Browser forms -->
+  <rect class="panel" x="50" y="405" width="530" height="1000" rx="20"/>
+  <text class="heading" x="80" y="443">2. Browser: client-side experience</text>
+  <rect class="node browser" x="90" y="478" width="450" height="112" rx="12"/>
+  <text class="label" x="315" y="512" text-anchor="middle">Log in</text><text class="body" x="315" y="537" text-anchor="middle">email + password checked locally</text><text class="small" x="315" y="559" text-anchor="middle">NotificationCenter shows attempt / result toasts</text>
+  <path class="line" d="M315 590 V630"/>
+  <rect class="node browser" x="90" y="630" width="450" height="100" rx="12"/>
+  <text class="label" x="315" y="666" text-anchor="middle">Synchronous request</text><text class="body" x="315" y="691" text-anchor="middle">XMLHttpRequest POST /php/login.php</text><text class="small" x="315" y="713" text-anchor="middle">Browser waits for the response</text>
+  <path class="line" d="M315 730 V770"/>
+  <rect class="node browser" x="90" y="770" width="450" height="122" rx="12"/>
+  <text class="label" x="315" y="805" text-anchor="middle">Sign up</text><text class="body" x="315" y="830" text-anchor="middle">validates name, email, phone, password,</text><text class="body" x="315" y="852" text-anchor="middle">password confirmation, and terms</text><text class="small" x="315" y="874" text-anchor="middle">live password-strength meter</text>
+  <path class="line" d="M315 892 V932"/>
+  <rect class="node browser" x="90" y="932" width="450" height="92" rx="12"/>
+  <text class="label" x="315" y="968" text-anchor="middle">Asynchronous request</text><text class="body" x="315" y="993" text-anchor="middle">fetch POST /php/signup.php</text>
+  <path class="line" d="M315 1024 V1064"/>
+  <rect class="node browser" x="90" y="1064" width="450" height="105" rx="12"/>
+  <text class="label" x="315" y="1098" text-anchor="middle">Forgot password</text><text class="body" x="315" y="1123" text-anchor="middle">validates email then fetch POST</text><text class="small" x="315" y="1145" text-anchor="middle">/php/forgot-password.php</text>
+  <path class="line" d="M315 1169 V1209"/>
+  <rect class="node warn" x="90" y="1209" width="450" height="142" rx="12"/>
+  <text class="label" x="315" y="1244" text-anchor="middle">All form paths include the CSRF token</text><text class="body" x="315" y="1269" text-anchor="middle">Invalid local input → inline feedback</text><text class="body" x="315" y="1292" text-anchor="middle">Server or network error → toast / message</text><text class="small" x="315" y="1319" text-anchor="middle">No database call until client validation passes</text>
+
+  <!-- Server processing -->
+  <rect class="panel" x="620" y="405" width="690" height="1000" rx="20"/>
+  <text class="heading" x="650" y="443">3. PHP endpoints: server-side enforcement</text>
+  <rect class="node server" x="660" y="478" width="280" height="105" rx="12"/>
+  <text class="label" x="800" y="512" text-anchor="middle">Shared request layer</text><text class="body" x="800" y="537" text-anchor="middle">POST-only + JSON response</text><text class="small" x="800" y="559" text-anchor="middle">check_csrf() rejects expired/invalid tokens</text>
+  <rect class="node server" x="990" y="478" width="280" height="105" rx="12"/>
+  <text class="label" x="1130" y="512" text-anchor="middle">PHP validators</text><text class="body" x="1130" y="537" text-anchor="middle">re-checks submitted data</text><text class="small" x="1130" y="559" text-anchor="middle">request cannot bypass the browser rules</text>
+  <path class="line" d="M940 530 H990"/>
+
+  <rect class="node server" x="660" y="650" width="280" height="150" rx="12"/>
+  <text class="label" x="800" y="685" text-anchor="middle">php/login.php</text><text class="body" x="800" y="710" text-anchor="middle">finds account by email</text><text class="body" x="800" y="732" text-anchor="middle">password_verify() checks hash</text><text class="small" x="800" y="760" text-anchor="middle">Success: regenerate session ID + store user</text>
+  <path class="line" d="M800 583 V650"/>
+  <path class="decision" d="M1010 645 L1130 710 L1010 775 L890 710 Z"/>
+  <text class="label" x="1010" y="706" text-anchor="middle">Credentials</text><text class="label" x="1010" y="727" text-anchor="middle">valid?</text>
+  <path class="line" d="M940 725 H890"/>
+  <path class="line" d="M1130 710 H1210"/><text class="yesno" x="1162" y="699">No</text>
+  <rect class="node warn" x="1210" y="665" width="60" height="90" rx="12"/>
+  <text class="small" x="1240" y="702" text-anchor="middle">JSON</text><text class="small" x="1240" y="723" text-anchor="middle">error</text>
+  <path class="line" d="M1010 775 V830"/><text class="yesno" x="1022" y="804">Yes</text>
+  <rect class="node server" x="860" y="830" width="300" height="105" rx="12"/>
+  <text class="label" x="1010" y="864" text-anchor="middle">Role redirect JSON</text><text class="body" x="1010" y="889" text-anchor="middle">patient, staff, or superadmin path</text><text class="small" x="1010" y="911" text-anchor="middle">browser navigates on success toast</text>
+
+  <rect class="node server" x="660" y="1010" width="280" height="150" rx="12"/>
+  <text class="label" x="800" y="1045" text-anchor="middle">php/signup.php</text><text class="body" x="800" y="1070" text-anchor="middle">checks unique email + phone</text><text class="body" x="800" y="1092" text-anchor="middle">password_hash() then INSERT</text><text class="small" x="800" y="1120" text-anchor="middle">new public signups default to patient</text>
+  <path class="line" d="M800 583 V1010"/>
+  <path class="line" d="M940 1085 H1000"/>
+  <path class="decision" d="M1110 1020 L1220 1085 L1110 1150 L1000 1085 Z"/>
+  <text class="label" x="1110" y="1081" text-anchor="middle">Unique &amp;</text><text class="label" x="1110" y="1102" text-anchor="middle">valid?</text>
+  <path class="line" d="M1110 1150 V1208"/><text class="yesno" x="1120" y="1180">Yes</text>
+  <rect class="node browser" x="940" y="1208" width="340" height="88" rx="12"/>
+  <text class="label" x="1110" y="1242" text-anchor="middle">Success dialog → login.php</text><text class="small" x="1110" y="1265" text-anchor="middle">User then signs in normally</text>
+  <path class="line" d="M1220 1085 H1250"/><text class="yesno" x="1225" y="1074">No</text>
+
+  <rect class="node server" x="660" y="1230" width="220" height="110" rx="12"/>
+  <text class="label" x="770" y="1264" text-anchor="middle">Forgot password</text><text class="body" x="770" y="1289" text-anchor="middle">checks CSRF + email</text><text class="small" x="770" y="1311" text-anchor="middle">looks up account privately</text>
+  <path class="line" d="M800 1160 V1230"/>
+
+  <!-- Data and dashboard -->
+  <rect class="panel" x="1350" y="405" width="400" height="1000" rx="20"/>
+  <text class="heading" x="1380" y="443">4. Data and access</text>
+  <rect class="node data" x="1390" y="490" width="320" height="155" rx="12"/>
+  <text class="label" x="1550" y="526" text-anchor="middle">MySQL: users table</text><text class="body" x="1550" y="551" text-anchor="middle">id, name, email, phone,</text><text class="body" x="1550" y="573" text-anchor="middle">password_hash, role, created_at</text><text class="small" x="1550" y="604" text-anchor="middle">Unique email + phone; prepared PDO queries</text>
+  <path class="line" d="M940 720 H1310 V568 H1390"/>
+  <path class="line" d="M940 1085 H1310 V568"/>
+  <path class="line" d="M880 1285 H1310 V568"/>
+  <rect class="node dash" x="1390" y="720" width="320" height="190" rx="12"/>
+  <text class="label" x="1550" y="756" text-anchor="middle">Dashboard access guard</text><text class="body" x="1550" y="781" text-anchor="middle">No session → login page</text><text class="body" x="1550" y="806" text-anchor="middle">Wrong role → correct dashboard</text><text class="small" x="1550" y="840" text-anchor="middle">Patient: care overview and quick actions</text><text class="small" x="1550" y="863" text-anchor="middle">Staff: clinic overview and quick actions</text><text class="small" x="1550" y="886" text-anchor="middle">Superadmin: management console</text>
+  <path class="line" d="M1210 302 V680 H1550 V720"/>
+  <rect class="node warn" x="1390" y="990" width="320" height="100" rx="12"/>
+  <text class="label" x="1550" y="1025" text-anchor="middle">Current scope note</text><text class="body" x="1550" y="1050" text-anchor="middle">Dashboard quick actions show demo dialogs.</text><text class="small" x="1550" y="1073" text-anchor="middle">Password-reset email/token sending is not yet wired.</text>
+  <rect class="node server" x="1390" y="1165" width="320" height="120" rx="12"/>
+  <text class="label" x="1550" y="1201" text-anchor="middle">Log out: index.php?logout=1</text><text class="body" x="1550" y="1226" text-anchor="middle">clears session, expires cookie, destroys session</text><text class="small" x="1550" y="1249" text-anchor="middle">redirects back to the public entry point</text>
+  <path class="line" d="M1550 910 V1165"/>
+  <path class="return" d="M1390 1225 H1330 V1395 H315 V1351"/>
+  <text class="small" x="710" y="1387" text-anchor="middle">Returns visitor to the authentication flow</text>
+
+  <text class="small" x="70" y="1495">Legend: blue = browser/UI · green = PHP/security layer · orange = data store · purple = protected access · red = validation/error or incomplete feature</text>
+  <text class="small" x="70" y="1522">Based on current project implementation: index.php, includes/start.php, auth/, php/, js/, dashboard/, and database.sql.</text>
+</svg>
