@@ -7,6 +7,15 @@
 CREATE DATABASE IF NOT EXISTS smartcare_db
   CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE smartcare_db;
+<<<<<<< HEAD
+=======
+=======
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE smartcare_db;
+>>>>>>> c1874b7688a3fb35217394f3506f42c58bbd82bb
+>>>>>>> 327fb05f16b480ff1a84ddf973549faabae266d6
 
 -- Identity and access ------------------------------------------------------
 CREATE TABLE IF NOT EXISTS users (
