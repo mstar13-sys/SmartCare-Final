@@ -12,7 +12,7 @@ USE smartcare_db;
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE smartcare;
+USE smartcare_db;
 >>>>>>> c1874b7688a3fb35217394f3506f42c58bbd82bb
 
 -- Identity and access ------------------------------------------------------
