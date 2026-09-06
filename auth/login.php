@@ -135,7 +135,7 @@ require __DIR__ . '/../includes/header.php';
   <?php require __DIR__ . '/../includes/footer.php'; ?>
   <script src="../js/validators.js" defer></script>
   <script src="../js/form-helpers.js" defer></script>
-  <script src="../js/notification-center.js" defer></script>
+  <script src="../js/login-notification-events.js" defer></script>
   <script src="../js/password-toggle.js" defer></script>
   <script src="../js/password-strength.js" defer></script>
   <script src="../js/login-form.js" defer></script>

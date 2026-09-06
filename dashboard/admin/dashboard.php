@@ -22,7 +22,7 @@ require __DIR__ . '/../../includes/header.php';
       <p class="eyebrow">Clinic staff portal</p>
       <h1>Good morning, <?php echo htmlspecialchars($currentUser['name']); ?>.</h1>
       <p class="dashboard-subtitle">Your clinic overview for today.</p>
-    </div><a class="dashboard-logout" href="../../index.php?logout=1">Log out</a>
+    </div><a class="dashboard-logout" href="../../index.php?logout=1" data-logout-confirmation>Log out</a>
   </header>
   <section class="dashboard-grid" aria-label="Staff overview">
     <article class="dashboard-card dashboard-card-featured">

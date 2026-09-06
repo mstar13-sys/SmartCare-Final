@@ -48,11 +48,13 @@ button.addEventListener('click', () => {
 | `js/form-helpers.js` | Small shared helpers (`showError`, `clearFieldStates`) used by both forms to show/hide the little red error messages under each field. |
 | `js/password-toggle.js` | Listens for clicks on the little "eye" icon next to a password field and toggles it between hidden (`••••`) and visible text. |
 | `js/password-strength.js` | Listens for typing (`input` event) in the sign-up password field and updates the strength meter + checklist (8+ characters, uppercase, number, special character) live. |
-| `js/toast.js` | Defines one function, `showToast({ type, title, body })`, that pops up the little notification card in the bottom-right corner. Any file can call it whenever it needs to tell the user something. |
-| `js/notification-center.js` | A tiny publish/subscribe hub used only for login events (`login:attempt`, `login:success`, `login:failed`). `login-form.js` publishes; this file's own subscribers call `showToast(...)` in response. See section 7. |
-| `js/login-form.js` | Listens for the login form being submitted, validates it, demonstrates event propagation, sends the request synchronously, and publishes login events. |
+| `js/toast-notifications.js` | Defines `showToast({ type, title, body, duration, onClose })`. It uses SweetAlert2's top-right toast mode and supplies a native fallback if the CDN is unavailable. |
+| `js/loading-overlay.js` | Provides the reusable animated loading overlay and guarantees a short minimum display time for login, sign-up, and logout. |
+| `js/login-notification-events.js` | A tiny publish/subscribe hub used only for login events (`login:attempt`, `login:success`, `login:failed`). `login-form.js` publishes; this file's own subscribers call `showToast(...)` in response. See section 7. |
+| `js/login-form.js` | Validates the login form, shows the credential-checking loader, submits asynchronously, and publishes login result events. |
 | `js/signup-form.js` | Validates the sign-up form and posts it to PHP **asynchronously** (`fetch()`), so the page stays responsive. On success it redirects to `login.php`. |
-| `js/dashboard.js` | Adds simple click handlers for the authenticated dashboard quick actions. |
+| `js/dashboard-action-notifications.js` | Shows informational toast notifications when authenticated dashboard quick actions are clicked. |
+| `js/logout-confirmation.js` | Asks for confirmation, shows the short logout loader, and then follows the dashboard's existing logout URL. |
 
 Everything except the login form's event flow (see section 7) is still
 just plain `addEventListener` calls and direct function calls — no
@@ -94,19 +96,18 @@ This is the easiest way to see the whole system in action:
    - Checks the email/password aren't empty. If something's missing,
      it calls `SmartCareFormHelpers.showError(...)` to show the red
      error message and **stops here**.
-   - Otherwise it publishes `login:attempt` (see section 7), shows the
-     loading spinner, and sends the request to `php/login.php` using a
-     synchronous `XMLHttpRequest` — the page freezes until PHP responds.
-     Sign-up always uses an asynchronous `fetch()` request instead, and
-     stays responsive the whole time. See section 8.
+   - Otherwise it publishes `login:attempt` (see section 7), opens the
+     credential-checking loader, and sends the request to `php/login.php`
+     asynchronously with `fetch()`. See section 8.
 4. When PHP responds:
    - If the demo credentials match, `login-form.js` publishes
      `login:success`, which is what actually triggers the success toast.
    - If not, it publishes `login:failed`, which triggers the error toast
-     and clears the password field.
+     and clears the password field. The inline login error clears after five
+     seconds, or immediately when the user edits either login field.
 
 Nothing in `login-form.js` calls `showToast()` directly anymore — it
-publishes what happened, and `notification-center.js` decides to turn
+publishes what happened, and `login-notification-events.js` decides to turn
 that into a toast. That's the one place in the app that works this way;
 see section 7 for why.
 
@@ -120,7 +121,7 @@ see section 7 for why.
 3. It posts to `php/signup.php` with `fetch()` (asynchronously — the
    page stays responsive while this runs). Once that succeeds, it:
    - Resets the form and the password-strength meter.
-   - Shows a success dialog, and on confirm, redirects the browser to
+   - Shows a success toast, and when it closes, redirects the browser to
      `login.php` with `window.location.href`.
 
 ---
@@ -166,7 +167,7 @@ password toggle, sign-up) still avoids that — buttons call functions
 directly, and you can trace what happens by reading top to bottom.
 
 The login form is the one exception, and it's intentional:
-`notification-center.js` defines a minimal **Observer / publish-subscribe**
+`login-notification-events.js` defines a minimal **Observer / publish-subscribe**
 hub —
 
 ```js
@@ -175,7 +176,7 @@ NotificationCenter.publish('login:success', { message: '...' });
 ```
 
 `login-form.js` publishes `login:attempt`, `login:success`, and
-`login:failed` at the right points; `notification-center.js`'s own
+`login:failed` at the right points; `login-notification-events.js`'s own
 subscribers turn those into `showToast(...)` calls and a console log.
 It's the same event-driven pattern real apps use to decouple "something
 happened" from "here's what we do about it" — kept small enough that
@@ -183,23 +184,18 @@ you can read the whole thing in one file.
 
 ---
 
-## 8. Synchronous vs. asynchronous processing
+## 8. Asynchronous processing and loading feedback
 
-Each form deliberately uses a different processing mode, so the two can
-be compared directly:
+Login and sign-up both submit with asynchronous `fetch()` requests so the
+browser remains responsive and the loading animation stays smooth. Login
+shows "Checking credentials..." while PHP verifies the account; sign-up
+shows "Creating your account..." while PHP validates and saves it. The
+shared loader remains visible for at least 1.2 seconds before the result
+toast appears. Confirmed logout uses the same minimum delay before ending
+the session.
 
-- **Login (`js/login-form.js`)** uses a **synchronous** `XMLHttpRequest`
-  (`xhr.open('POST', url, false)`), and `php/login.php` deliberately
-  `sleep(2)`s. Because the request is synchronous, `xhr.send()` doesn't
-  return until PHP responds — the whole page is frozen for those ~2
-  seconds. Try typing in another field while logging in: nothing happens
-  until the request finishes.
-- **Sign-up (`js/signup-form.js`)** uses **asynchronous** `fetch()`. The
-  page stays fully responsive while `php/signup.php` runs — you can keep
-  typing, and the submit button's spinner keeps animating.
-
-Both forms show progress and result messages in their message area and use
-SweetAlert2 when the CDN is available, with the built-in toast as a fallback.
+Result messages use SweetAlert2 toast notifications when the CDN is
+available, with the built-in toast implementation as a fallback.
 
 ## 9. Authenticated dashboard
 

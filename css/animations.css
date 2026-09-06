@@ -86,16 +86,8 @@
     transform: translateY(-10px) scale(0.995);
   }
 }
-/* This animation lives on .shell, NOT body. A `transform` on <body> —
-   even the animation's own resting value of translateY(0) scale(1) —
-   creates a new containing block for any `position: fixed` descendant,
-   including SweetAlert2's popup. That silently breaks SweetAlert2's
-   viewport centering: it ends up centered against the full scrollable
-   page instead of what's actually on screen, which is exactly why the
-   modal on the taller signup page used to land near the top instead of
-   the center. Keeping the transform on .shell (and leaving <body> alone)
-   avoids that entirely, since SweetAlert2 appends its popup as a direct
-   child of <body>, outside .shell. */
+/* Keep the transition on .shell so fixed-position toast notifications
+   remain anchored to the viewport instead of the page content. */
 .shell {
   animation: page-fade-in 0.32s var(--ease) both;
 }

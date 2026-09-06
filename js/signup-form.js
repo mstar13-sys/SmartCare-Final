@@ -1,19 +1,4 @@
-/* =========================================================================
-   Sign Up Form
-   -------------------------------------------------------------------------
-   Mirrors login-form.js: owns all DOM events for the signup form. Reuses
-   SmartCarePasswordStrength (from password-strength.js) so the pass/fail
-   rules used at submit time are guaranteed to match what the user sees
-   live in the meter. After a successful signup it redirects to
-   login.php.
-
-   Processing mode: ASYNCHRONOUS. Submission uses fetch(), so the browser
-   keeps painting and responding to input the whole time php/signup.php
-   is working — the spinner keeps spinning, and the page never locks up.
-   This is the intentional contrast with the login form, which uses a
-   blocking synchronous XMLHttpRequest and freezes while it waits —
-   compare js/login-form.js.
-   ========================================================================= */
+/* Sign-up form validation and asynchronous account creation. */
 (function () {
   const form = document.getElementById("signupForm");
   const fullName = document.getElementById("fullName");
@@ -22,28 +7,25 @@
   const password = document.getElementById("signupPassword");
   const confirmPassword = document.getElementById("confirmPassword");
   const terms = document.getElementById("terms");
+  const submitBtn = form.querySelector(".submit-btn");
+  let signupComplete = false;
 
-  // ---- Clear inline errors as the user types / checks the box ----
-  [fullName, email, phone].forEach((el) => {
-    el.addEventListener("input", () =>
-      SmartCareFormHelpers.showError(el, false),
+  [fullName, email, phone].forEach((field) => {
+    field.addEventListener("input", () =>
+      SmartCareFormHelpers.showError(field, false),
     );
   });
+
   terms.addEventListener("change", () =>
     SmartCareFormHelpers.showError(terms, false),
   );
 
-  // ---- Confirm-password gets its own live check, not just "clear on type" ----
-  // Bug this replaces: the old generic handler wiped the error the moment
-  // you typed anything into this field, even while it still didn't match
-  // the password above — so the red border would vanish on a mismatched
-  // value and only come back at submit. Now it re-checks the match on
-  // every keystroke instead of blindly clearing.
   confirmPassword.addEventListener("input", () => {
     if (confirmPassword.value === "") {
       SmartCareFormHelpers.showError(confirmPassword, false);
       return;
     }
+
     const mismatch = confirmPassword.value !== password.value;
     SmartCareFormHelpers.showError(
       confirmPassword,
@@ -52,13 +34,24 @@
     );
   });
 
-  // ---- Form submission ----
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
 
-    const btn = form.querySelector(".submit-btn");
-    if (btn.classList.contains("loading")) return; // guard against double submits
+    if (submitBtn.classList.contains("loading") || signupComplete) return;
+    if (!validateSignup()) return;
 
+    submitBtn.classList.add("loading");
+    submitBtn.disabled = true;
+
+    const loadingStartedAt = SmartCareLoading.show({
+      title: "Creating your account...",
+      message: "Please wait while we securely save your information.",
+    });
+
+    submitSignup(new FormData(form), loadingStartedAt);
+  });
+
+  function validateSignup() {
     let valid = true;
 
     if (fullName.value.trim().length < 2) {
@@ -69,6 +62,7 @@
       );
       valid = false;
     }
+
     if (!SmartCareValidators.isValidEmail(email.value.trim())) {
       SmartCareFormHelpers.showError(
         email,
@@ -77,6 +71,7 @@
       );
       valid = false;
     }
+
     if (!SmartCareValidators.isValidPhone(phone.value.trim())) {
       SmartCareFormHelpers.showError(
         phone,
@@ -96,14 +91,16 @@
       valid = false;
     }
 
-    const matchOk =
+    const passwordsMatch =
       confirmPassword.value !== "" && confirmPassword.value === password.value;
-    if (!matchOk) {
-      const msg =
+    if (!passwordsMatch) {
+      SmartCareFormHelpers.showError(
+        confirmPassword,
+        true,
         confirmPassword.value === ""
           ? "Re-enter your password to confirm it."
-          : "Passwords don't match.";
-      SmartCareFormHelpers.showError(confirmPassword, true, msg);
+          : "Passwords don't match.",
+      );
       valid = false;
     }
 
@@ -116,54 +113,65 @@
       valid = false;
     }
 
-    if (!valid) return;
+    return valid;
+  }
 
-    btn.classList.add("loading");
-    btn.disabled = true;
-
-    const body = new FormData(form); // includes the hidden csrf_token field automatically
-
-    fetch(form.action, { method: form.method, body })
-      .then((res) => res.json())
-      .then((data) => {
-        btn.classList.remove("loading");
-        btn.disabled = false;
-
-        if (data.success) {
-          form.reset();
-          SmartCareFormHelpers.clearFieldStates(form.querySelectorAll("input"));
-          SmartCarePasswordStrength.reset();
-
-          showSuccessDialog({
-            title: "Account created!",
-            text: data.message,
-            confirmButtonText: "Okay",
-            onConfirm: () => {
-              window.location.href = "login.php";
-            },
-          });
-        } else {
-          if (data.errors) {
-            Object.keys(data.errors).forEach((id) => {
-              const el = document.getElementById(id);
-              if (el) SmartCareFormHelpers.showError(el, true, data.errors[id]);
-            });
-          }
-          showToast({
-            type: "error",
-            title: "Sign up failed",
-            body: data.message,
-          });
-        }
-      })
-      .catch(() => {
-        btn.classList.remove("loading");
-        btn.disabled = false;
-        showToast({
-          type: "error",
-          title: "Connection problem",
-          body: "Couldn't reach the server. Please try again.",
-        });
+  async function submitSignup(body, loadingStartedAt) {
+    try {
+      const response = await fetch(form.action, {
+        method: form.method,
+        body,
       });
-  });
+      const data = await response.json();
+
+      await SmartCareLoading.wait(loadingStartedAt);
+      SmartCareLoading.hide();
+
+      if (data.success) {
+        signupComplete = true;
+        submitBtn.classList.remove("loading");
+        submitBtn.disabled = true;
+        form.reset();
+        SmartCareFormHelpers.clearFieldStates(form.querySelectorAll("input"));
+        SmartCarePasswordStrength.reset();
+
+        showToast({
+          type: "success",
+          title: "Account created!",
+          body: data.message,
+          onClose: () => {
+            window.location.href = "login.php";
+          },
+        });
+        return;
+      }
+
+      finishSubmit();
+      if (data.errors) {
+        Object.keys(data.errors).forEach((id) => {
+          const field = document.getElementById(id);
+          if (field) SmartCareFormHelpers.showError(field, true, data.errors[id]);
+        });
+      }
+      showToast({
+        type: "error",
+        title: "Sign up failed",
+        body: data.message,
+      });
+    } catch (error) {
+      await SmartCareLoading.wait(loadingStartedAt);
+      SmartCareLoading.hide();
+      finishSubmit();
+      showToast({
+        type: "error",
+        title: "Connection problem",
+        body: "Couldn't reach the server. Please try again.",
+      });
+    }
+  }
+
+  function finishSubmit() {
+    submitBtn.classList.remove("loading");
+    submitBtn.disabled = false;
+  }
 })();
