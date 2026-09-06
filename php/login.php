@@ -27,11 +27,15 @@ if ($errors) {
 sleep(2);
 
 // ---- Look the account up and verify the password ----
-$stmt = $pdo->prepare('SELECT id, full_name, password_hash, role FROM users WHERE email = :email LIMIT 1');
+$stmt = $pdo->prepare('SELECT id, full_name, password_hash, role, status FROM users WHERE email = :email LIMIT 1');
 $stmt->execute(['email' => strtolower($email)]);
 $account = $stmt->fetch();
 
 if ($account && password_verify($password, $account['password_hash'])) {
+    if (($account['status'] ?? 'active') !== 'active') {
+        json_response(false, 'This account is not currently active. Contact a SmartCare administrator.');
+    }
+
     // Regenerate the session ID on privilege change (login) to prevent
     // session fixation — cheap to do, good habit to keep.
     session_regenerate_id(true);
@@ -41,6 +45,9 @@ if ($account && password_verify($password, $account['password_hash'])) {
         'email' => strtolower($email),
         'role'  => $account['role'],
     ];
+
+    $pdo->prepare('UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = :id')
+        ->execute(['id' => $account['id']]);
 
     $dashboardByRole = [
         'staff' => '../dashboard/admin/dashboard.php',

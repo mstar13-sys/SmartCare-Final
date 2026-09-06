@@ -1,77 +1,68 @@
-
 (function () {
-  const signupPassword = document.getElementById("signupPassword");
-  const confirmPassword = document.getElementById("confirmPassword");
-  const strengthBars = document.querySelectorAll("#strengthBlock .bars i");
-  const strengthLabel = document.getElementById("strengthLabel");
+  "use strict";
 
   const STRENGTH_COLORS = ["#ba1a1a", "#e08a2c", "#2c9ee0", "#1fb5ad", "#51d8d1"];
   const STRENGTH_NAMES = ["Weak", "Fair", "Good", "Strong", "Very Strong"];
 
-  function evaluate(value) {
-    const checks = SmartCareValidators.checkPasswordRules(value);
-    const metCount = Object.values(checks).filter(Boolean).length;
+  function create(passwordInput, strengthBlock, confirmInput = null) {
+    if (!passwordInput || !strengthBlock || typeof SmartCareValidators === "undefined") return null;
 
-    Object.keys(checks).forEach((rule) => {
-      const li = document.querySelector(`.req-list li[data-rule="${rule}"]`);
-      if (li) li.classList.toggle("met", checks[rule]);
-    });
+    const strengthBars = strengthBlock.querySelectorAll(".bars i");
+    const strengthLabel = strengthBlock.querySelector(".label");
 
-    strengthBars.forEach((bar, i) => {
-      const isFilled = value.length > 0 && i < metCount;
-      bar.classList.toggle("filled", isFilled);
-      bar.style.setProperty(
-        "--dot-color",
-        isFilled ? STRENGTH_COLORS[metCount - 1] : "",
-      );
-    });
+    function evaluate(value) {
+      const checks = SmartCareValidators.checkPasswordRules(value);
+      const metCount = Object.values(checks).filter(Boolean).length;
 
-    strengthLabel.textContent =
-      value.length === 0
-        ? "Password strength"
-        : STRENGTH_NAMES[Math.max(metCount - 1, 0)];
-    strengthLabel.style.color =
-      value.length === 0 ? "" : STRENGTH_COLORS[Math.max(metCount - 1, 0)];
+      Object.keys(checks).forEach((rule) => {
+        const item = strengthBlock.querySelector(`.req-list li[data-rule="${rule}"]`);
+        if (item) item.classList.toggle("met", checks[rule]);
+      });
 
-    // Keep the strength indicator visible once the user enters a password.
-    // if (value.length === 0) {
-    //   strengthLabel.textContent = "Password strength";
-    //   strengthLabel.style.color = "";
-    // } else {
-    //   strengthLabel.textContent = STRENGTH_NAMES[Math.max(metCount - 1, 0)];
-    //   strengthLabel.style.color = STRENGTH_COLORS[Math.max(metCount - 1, 0)];
-    // }
+      strengthBars.forEach((bar, index) => {
+        const isFilled = value.length > 0 && index < metCount;
+        bar.classList.toggle("filled", isFilled);
+        bar.style.setProperty("--dot-color", isFilled ? STRENGTH_COLORS[metCount - 1] : "");
+      });
 
-    return checks;
-  }
-
-  function reset() {
-    strengthBars.forEach((bar) => {
-      bar.classList.remove("filled");
-      bar.style.removeProperty("--dot-color");
-    });
-    strengthLabel.textContent = "Password strength";
-    strengthLabel.style.color = "";
-    document
-      .querySelectorAll(".req-list li")
-      .forEach((li) => li.classList.remove("met"));
-  }
-
-  // ---- Event source: keystrokes in the password field ----
-  signupPassword.addEventListener("input", () => {
-    evaluate(signupPassword.value);
-    SmartCareFormHelpers.showError(signupPassword, false);
-
-    if (confirmPassword.value) {
-      const mismatch = confirmPassword.value !== signupPassword.value;
-      SmartCareFormHelpers.showError(
-        confirmPassword,
-        mismatch,
-        mismatch ? "Passwords don't match." : "",
-      );
+      strengthLabel.textContent = value.length === 0 ? "Password strength" : STRENGTH_NAMES[Math.max(metCount - 1, 0)];
+      strengthLabel.style.color = value.length === 0 ? "" : STRENGTH_COLORS[Math.max(metCount - 1, 0)];
+      return checks;
     }
+
+    function reset() {
+      strengthBars.forEach((bar) => {
+        bar.classList.remove("filled");
+        bar.style.removeProperty("--dot-color");
+      });
+      strengthLabel.textContent = "Password strength";
+      strengthLabel.style.color = "";
+      strengthBlock.querySelectorAll(".req-list li").forEach((item) => item.classList.remove("met"));
+    }
+
+    passwordInput.addEventListener("input", () => {
+      evaluate(passwordInput.value);
+      if (window.SmartCareFormHelpers) SmartCareFormHelpers.showError(passwordInput, false);
+
+      if (confirmInput?.value && window.SmartCareFormHelpers) {
+        const mismatch = confirmInput.value !== passwordInput.value;
+        SmartCareFormHelpers.showError(confirmInput, mismatch, mismatch ? "Passwords don't match." : "");
+      }
+    });
+    passwordInput.form?.addEventListener("reset", () => window.setTimeout(reset, 0));
+
+    return { evaluate, reset };
+  }
+
+  const signupPassword = document.getElementById("signupPassword");
+  const signupStrength = document.getElementById("strengthBlock");
+  const signupInstance = create(signupPassword, signupStrength, document.getElementById("confirmPassword"));
+  if (signupInstance) window.SmartCarePasswordStrength = signupInstance;
+
+  document.querySelectorAll("[data-password-strength-for]").forEach((block) => {
+    if (block === signupStrength) return;
+    create(document.getElementById(block.dataset.passwordStrengthFor), block);
   });
 
-  // ---- Exposed so signup-form.js can reuse this logic at submit time ----
-  window.SmartCarePasswordStrength = { evaluate, reset };
+  window.SmartCarePasswordStrengthFactory = { create };
 })();

@@ -8,12 +8,22 @@ html,
 body {
   margin: 0;
   padding: 0;
+  max-width: 100%;
+}
+html {
+  /* `overflow-x: hidden` creates a scrolling ancestor in Chromium and
+     prevents the desktop brand panel from sticking while the long
+     Sign Up form scrolls. `clip` hides accidental horizontal overflow
+     without creating that scroll container. */
+  overflow-x: clip;
 }
 body {
   font-family: "Inter", system-ui, sans-serif;
   background: var(--bg);
   color: var(--ink);
   min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 h1,
@@ -27,8 +37,17 @@ p {
 button {
   font-family: inherit;
 }
-input {
+input,
+select,
+textarea {
   font-family: inherit;
+  max-width: 100%;
+}
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
 }
 a {
   color: inherit;
@@ -41,7 +60,9 @@ a {
 /* Keyboard focus visibility (accessibility floor) */
 a:focus-visible,
 button:focus-visible,
-input:focus-visible {
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
   outline: 2.5px solid var(--primary);
   outline-offset: 2px;
 }

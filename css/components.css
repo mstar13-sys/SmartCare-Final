@@ -650,8 +650,10 @@ form {
 /* --- Authenticated dashboard --- */
 .dashboard-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   padding: clamp(28px, 6vw, 72px) clamp(20px, 7vw, 104px);
   background: var(--bg);
+  overflow-x: hidden;
 }
 .dashboard-header {
   max-width: 1120px;
@@ -660,6 +662,9 @@ form {
   align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
+}
+.dashboard-header > div {
+  min-width: 0;
 }
 .eyebrow {
   color: var(--teal);
@@ -673,6 +678,7 @@ form {
   font-size: clamp(28px, 4vw, 46px);
   line-height: 1.08;
   color: var(--ink);
+  overflow-wrap: anywhere;
 }
 .dashboard-subtitle {
   margin-top: 10px;
@@ -680,6 +686,10 @@ form {
   font-size: 16px;
 }
 .dashboard-logout {
+  min-height: 44px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
   color: var(--primary);
   font-size: 13px;
   font-weight: 700;
@@ -695,6 +705,7 @@ form {
   gap: 16px;
 }
 .dashboard-card {
+  min-width: 0;
   min-height: 210px;
   padding: 24px;
   background: var(--surface);
@@ -772,6 +783,8 @@ form {
   gap: 9px;
 }
 .quick-action {
+  width: 100%;
+  min-width: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -783,6 +796,9 @@ form {
   font: 600 13px inherit;
   text-align: left;
   cursor: pointer;
+}
+.quick-action:not(:hover) {
+  overflow-wrap: anywhere;
 }
 .quick-action:hover {
   border-color: var(--primary);

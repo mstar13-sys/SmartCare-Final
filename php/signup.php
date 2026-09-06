@@ -18,7 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 check_csrf();
 
-$role     = ($_POST['role'] ?? '') === 'staff' ? 'staff' : 'patient';
+// Public registration creates patients only. Staff accounts are provisioned
+// by a superadmin through the protected management dashboard.
+$role     = 'patient';
 $fullName = trim($_POST['fullName'] ?? '');
 $email    = strtolower(trim($_POST['signupEmail'] ?? ''));
 $phone    = trim($_POST['phone'] ?? '');
@@ -93,6 +95,7 @@ $insert = $pdo->prepare(
 );
 
 try {
+    $pdo->beginTransaction();
     $insert->execute([
         'full_name'     => $fullName,
         'email'         => $email,
@@ -100,7 +103,20 @@ try {
         'password_hash' => password_hash($password, PASSWORD_DEFAULT),
         'role'          => $role,
     ]);
+    $userId = (int) $pdo->lastInsertId();
+    if ($role === 'patient') {
+        $profile = $pdo->prepare(
+            'INSERT INTO patient_profiles (user_id, medical_record_no)
+             VALUES (:user_id, :medical_record_no)'
+        );
+        $profile->execute([
+            'user_id' => $userId,
+            'medical_record_no' => 'SC-' . str_pad((string) $userId, 8, '0', STR_PAD_LEFT),
+        ]);
+    }
+    $pdo->commit();
 } catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
     // Belt-and-suspenders: if two signups for the same email/phone land at
     // almost the same instant, both can pass the SELECT check above before
     // either INSERT commits. The database's own UNIQUE constraints are the

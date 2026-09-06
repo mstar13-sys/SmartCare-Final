@@ -246,16 +246,32 @@ side picks it up automatically — no separate fetch just to get a token.
 
 ## 11. Database setup
 
-The app needs one MySQL database with one table, `users`. To create it:
+The app uses the `smartcare_db` MySQL database. Its schema preserves the
+existing `users` contract used by login/sign-up and also provides the tables
+needed by the patient, staff, and superadmin dashboard functions. To create a
+fresh database:
 
 ```
 mysql -u root -p < database.sql
 ```
 
-`database.sql` creates the `smartcare` database, the `users`
-table (`full_name`, `email`, `phone`, `password_hash`, `role`,
-`created_at`), and seeds a demo account so the credentials below still
-work out of the box:
+For an existing installation that still has the original `doctors`,
+`appointments`, and `queue_tickets` design, run the one-time migration first:
+
+```powershell
+mysql -u root -p -P 3307 < database/migrate_legacy.sql
+mysql -u root -p -P 3307 < database/smartcare.sql
+```
+
+The migration preserves incompatible tables as `legacy_appointments` and
+`legacy_queue_tickets` instead of deleting their data.
+
+`database.sql` creates identity/profile tables, clinic services and staff
+schedules, appointments and queues, clinical records and prescriptions,
+reminders, messaging, notifications, staff tasks, password-reset tokens,
+audit logs, and system settings. It also seeds a demo patient account so the
+credentials below still work out of the box. See `database/SCHEMA.md` for the
+table-to-function map and relationship notes.
 
 ```
 email:    demo@smartcare.com
@@ -266,15 +282,15 @@ password: Demo1234!
 
 ```php
 $host = "127.0.0.1";
-$port = 3306;
-$db   = "smartcare";
+$port = 3307;
+$db   = "smartcare_db";
 $user = "root";
-$pass = "";
+$pass = "password";
 ```
 
-These defaults match a typical local install (XAMPP/MAMP/Laragon —
-`root` user, no password). If your setup is different, that's the only
-file you need to edit. Every endpoint that touches the database does
+These values are the current project defaults. If your MySQL setup is
+different, edit that file before running the app. Every endpoint that touches
+the database does
 `require __DIR__ . '/config.php';` and then just uses `$pdo` — prepared
 statements throughout, so user input never gets concatenated into SQL.
 
@@ -282,3 +298,21 @@ If the connection fails (wrong credentials, or the database/table don't
 exist yet), `php/config.php` replies with the same `{ success: false,
 message }` JSON shape as every other endpoint, so the form shows a
 clear error toast instead of a blank PHP error page.
+
+## 12. Superadmin operations console
+
+Accounts with the `superadmin` role are redirected to
+`dashboard/superadmin/dashboard.php`. The console provides database-backed
+overview metrics and searchable/exportable views for staff, patients,
+appointments, services, schedules, notifications, reports, and audit history.
+
+State-changing operations are handled by `php/superadmin.php`. That endpoint
+requires a superadmin session, validates CSRF tokens, uses prepared statements,
+and records staff, service, user-status, and appointment-status changes in
+`audit_logs`. Public signup creates patient accounts only; staff accounts are
+created from the protected superadmin console.
+
+The console uses Lucide SVG icons from a pinned CDN version. Data loading and
+mutations use `admin:*` custom browser events so fetching, rendering, refreshes,
+and notifications remain decoupled. Direct controls such as opening or closing
+the mobile menu remain simple click handlers.

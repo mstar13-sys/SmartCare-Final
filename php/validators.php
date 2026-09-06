@@ -19,6 +19,7 @@ function check_password_rules(string $value): array
     return [
         'len'     => strlen($value) >= 8,
         'upper'   => (bool) preg_match('/[A-Z]/', $value),
+        'lower'   => (bool) preg_match('/[a-z]/', $value),
         'num'     => (bool) preg_match('/[0-9]/', $value),
         'special' => (bool) preg_match('/[^A-Za-z0-9]/', $value),
     ];
