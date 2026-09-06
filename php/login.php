@@ -31,6 +31,10 @@ $stmt = $pdo->prepare('SELECT id, full_name, password_hash, role, status FROM us
 $stmt->execute(['email' => strtolower($email)]);
 $account = $stmt->fetch();
 
+if ($account && empty($account['password_hash'])) {
+    json_response(false, 'This account uses Google Sign-In. Choose Continue with Google instead.');
+}
+
 if ($account && password_verify($password, $account['password_hash'])) {
     if (($account['status'] ?? 'active') !== 'active') {
         json_response(false, 'This account is not currently active. Contact a SmartCare administrator.');

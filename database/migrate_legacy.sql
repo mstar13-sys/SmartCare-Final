@@ -26,10 +26,16 @@ ALTER TABLE legacy_queue_tickets
 -- Bring the existing account table up to the contract used by authentication
 -- and the superadmin dashboard. Existing values and primary keys are retained.
 ALTER TABLE users
+  MODIFY phone VARCHAR(30) NULL,
+  MODIFY password_hash VARCHAR(255) NULL,
   MODIFY status ENUM('pending','active','suspended','inactive') NOT NULL DEFAULT 'active',
   ADD COLUMN phone_normalized VARCHAR(30) GENERATED ALWAYS AS
     (REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(phone,' ',''),'-',''),'(',''),')',''),'+','')) STORED AFTER phone,
+  ADD COLUMN google_id VARCHAR(255) NULL AFTER password_hash,
+  ADD COLUMN auth_provider ENUM('local','google','local_google') NOT NULL DEFAULT 'local' AFTER google_id,
+  ADD COLUMN profile_picture VARCHAR(500) NULL AFTER auth_provider,
   ADD COLUMN last_login_at DATETIME NULL AFTER email_verified_at,
+  ADD UNIQUE KEY uq_users_google_id (google_id),
   ADD KEY idx_users_phone_normalized (phone_normalized),
   ADD KEY idx_users_role_status (role,status);
 

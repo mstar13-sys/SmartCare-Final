@@ -3,7 +3,7 @@
 -- superadmin workflows represented by the dashboards.
 -- Import: mysql -u root -p < database/smartcare.sql
 
-CREATE DATABASE IF NOT EXISTS smartcare
+CREATE DATABASE IF NOT EXISTS smartcare_db
   CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE smartcare_db;
 
@@ -12,10 +12,13 @@ CREATE TABLE IF NOT EXISTS users (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   full_name VARCHAR(100) NOT NULL,
   email VARCHAR(150) NOT NULL,
-  phone VARCHAR(30) NOT NULL,
+  phone VARCHAR(30) NULL,
   phone_normalized VARCHAR(30) GENERATED ALWAYS AS
     (REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(phone,' ',''),'-',''),'(',''),')',''),'+','')) STORED,
-  password_hash VARCHAR(255) NOT NULL,
+  password_hash VARCHAR(255) NULL,
+  google_id VARCHAR(255) NULL,
+  auth_provider ENUM('local','google','local_google') NOT NULL DEFAULT 'local',
+  profile_picture VARCHAR(500) NULL,
   role ENUM('patient','staff','superadmin') NOT NULL DEFAULT 'patient',
   status ENUM('pending','active','suspended','inactive') NOT NULL DEFAULT 'active',
   email_verified_at DATETIME NULL,
@@ -24,6 +27,7 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY uq_users_email (email),
   UNIQUE KEY uq_users_phone_normalized (phone_normalized),
+  UNIQUE KEY uq_users_google_id (google_id),
   KEY idx_users_role_status (role,status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

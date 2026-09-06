@@ -1,5 +1,6 @@
 <?php
 require __DIR__ . '/../includes/start.php';
+require __DIR__ . '/../php/google-config.php';
 if ($currentUser) {
   header('Location: ../' . role_dashboard_path($currentUser['role']));
   exit;
@@ -7,6 +8,7 @@ if ($currentUser) {
 $mode = (($_GET['mode'] ?? '') === 'signup') ? 'signup' : 'login';
 $pageTitle = $mode === 'signup' ? 'SmartCare - Sign Up' : 'SmartCare - Log In';
 $assetRoot = '..';
+$googleConfigured = google_oauth_is_configured();
 require __DIR__ . '/../includes/header.php';
 ?>
 <div class="shell">
@@ -49,6 +51,11 @@ require __DIR__ . '/../includes/header.php';
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken); ?>" />
             <button class="submit-btn" type="submit"><span class="spinner"></span><span class="btn-label">Log In</span></button>
           </form>
+          <div class="oauth-divider" role="separator"><span>or continue with</span></div>
+          <div class="google-auth-block">
+            <div class="google-button-host" data-google-button data-google-text="continue_with" data-google-label="Continue with Google" aria-label="Continue with Google"></div>
+            <p class="google-auth-note">Use your Google account for a faster, secure sign-in.</p>
+          </div>
           <p class="switch-foot">Don't have an account?<a href="login.php?mode=signup" data-switch-target="signup"> Sign up</a></p>
         </div>
 
@@ -125,6 +132,11 @@ require __DIR__ . '/../includes/header.php';
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken); ?>" />
             <button class="submit-btn" type="submit"><span class="spinner"></span><span class="btn-label">Create Account</span></button>
           </form>
+          <div class="oauth-divider" role="separator"><span>or sign up with</span></div>
+          <div class="google-auth-block">
+            <div class="google-button-host" data-google-button data-google-text="signup_with" data-google-label="Sign up with Google" aria-label="Sign up with Google"></div>
+            <p class="google-auth-note">Google accounts are created as patient accounts. You can add your phone number later.</p>
+          </div>
           <p class="switch-foot">Already have an account?<a href="login.php" data-switch-target="login"> Log in</a></p>
         </div>
 
@@ -142,3 +154,10 @@ require __DIR__ . '/../includes/header.php';
   <script src="../js/signup-form.js" defer></script>
   <script src="../js/clear-auth-fields.js" defer></script>
   <script src="../js/auth-switch.js" defer></script>
+  <script>
+    window.SMARTCARE_GOOGLE_CLIENT_ID = <?php echo json_encode($googleConfigured ? GOOGLE_CLIENT_ID : ''); ?>;
+    window.SMARTCARE_GOOGLE_CONFIGURED = <?php echo $googleConfigured ? 'true' : 'false'; ?>;
+    window.SMARTCARE_CSRF_TOKEN = <?php echo json_encode($csrfToken); ?>;
+  </script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="../js/google-auth.js" defer></script>

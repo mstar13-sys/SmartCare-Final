@@ -316,3 +316,16 @@ The console uses Lucide SVG icons from a pinned CDN version. Data loading and
 mutations use `admin:*` custom browser events so fetching, rendering, refreshes,
 and notifications remain decoupled. Direct controls such as opening or closing
 the mobile menu remain simple click handlers.
+
+
+## Google Sign-In setup
+
+This build includes Google Identity Services sign-in for login and signup.
+
+1. Open `php/google-config.php` and replace `PASTE_YOUR_GOOGLE_CLIENT_ID_HERE` with your OAuth 2.0 **Web Client ID** from Google Cloud. Do not place a Client Secret in browser code.
+2. For an existing database, run `database/google_oauth_migration.sql` once. New installs can import `database/smartcare.sql`, which already includes the Google fields.
+3. In Google Cloud, add every site origin you use under the Web OAuth client's **Authorized JavaScript origins**, for example `http://localhost:8000` and your InfinityFree HTTPS domain.
+4. While the OAuth app is in Testing, add the Gmail accounts of your instructor/classmates under **Audience > Test users**.
+5. Google-created accounts default to the `patient` role. If a verified Google email already exists as a password account, SmartCare links Google to that account instead of creating a duplicate.
+
+The server verifies Google ID tokens before creating a SmartCare session. A Google-only account has no local password and can add its phone number later.

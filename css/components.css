@@ -1034,3 +1034,95 @@ form {
   border-radius: 0;
   box-shadow: none;
 }
+
+
+/* --- Google Identity Services authentication --- */
+.oauth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 14px;
+  color: var(--ink-variant);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.oauth-divider::before,
+.oauth-divider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: var(--outline-soft);
+}
+.oauth-divider span {
+  white-space: nowrap;
+}
+.google-auth-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.google-button-host {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.google-button-host > div,
+.google-button-host iframe {
+  max-width: 100% !important;
+}
+.google-auth-note,
+.google-unavailable {
+  margin: 0;
+  max-width: 390px;
+  text-align: center;
+  color: var(--ink-variant);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+.google-unavailable {
+  padding: 10px 12px;
+  border: 1px solid var(--outline-soft);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+/* Visible OAuth setup fallback. This is replaced by Google's official button once a Client ID is configured. */
+.google-setup-button {
+  width: min(100%, 400px);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 16px;
+  border: 1px solid #747775;
+  border-radius: 4px;
+  background: #fff;
+  color: #1f1f1f;
+  font: 500 14px/1.2 Arial, sans-serif;
+  cursor: pointer;
+  transition: background-color .16s ease, box-shadow .16s ease;
+}
+.google-setup-button:hover {
+  background: #f8fafd;
+  box-shadow: 0 1px 2px rgba(60,64,67,.18);
+}
+.google-setup-button:focus-visible {
+  outline: 2px solid var(--primary, #1a73e8);
+  outline-offset: 2px;
+}
+.google-g {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #4285f4;
+}
